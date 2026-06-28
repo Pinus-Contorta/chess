@@ -14,9 +14,13 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
 
+    //TODO: Do some thinking if this "first move" flag is a good implimentation
+    //Stores if the piece has been moved, mostly for pawn openings
+    private boolean isFirstMove;
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+        this.isFirstMove = false;
     }
 
     /**
@@ -54,10 +58,8 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         //TODO: This is a brute force override and this must be properly implimented before submission
-        ChessPiece piece = board.getPiece(myPosition);
-        if(piece.getPieceType() == PieceType.BISHOP) {
-            return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
-        }
-        return List.of();
+        ChessMoveCalculator piece = new ChessMoveCalculator(board.getPiece(myPosition));
+
+        return piece.getValidMoves();
     }
 }
