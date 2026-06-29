@@ -60,6 +60,6 @@ public class ChessPiece {
         //TODO: This is a brute force override and this must be properly implimented before submission
         ChessMoveCalculator piece = new ChessMoveCalculator(board.getPiece(myPosition));
 
-        return piece.getValidMoves();
+        return piece.getValidMoves(myPosition, this);
     }
 }
