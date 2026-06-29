@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -23,6 +24,23 @@ public class ChessPiece {
         this.isFirstMove = false;
     }
 
+    //TODO: Try to understand what these following two methods do for us.
+    //VERY IMPORTANT
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return isFirstMove == that.isFirstMove && pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type, isFirstMove);
+    }
+
+    //VERY IMPORTANT
     /**
      * The various different chess piece options
      */

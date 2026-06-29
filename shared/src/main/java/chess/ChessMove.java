@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -53,5 +55,21 @@ public class ChessMove {
          */
         //TODO: This doesn't handle promotion piece representation for pawns. Leave this here until we fix that or know for a fact we do not need it.
         return String.format("%s%s", startPosition, endPosition);
+    }
+
+    //Alright, these are to make sure that comparisons with the autograder work.
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessMove chessMove = (ChessMove) o;
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 }
