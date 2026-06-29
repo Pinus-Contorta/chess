@@ -34,6 +34,7 @@ public class ChessMoveCalculator {
             case KING:
                 return List.of(new ChessMove(startPosition, new ChessPosition(0,0), null));
 
+
             case QUEEN:
                 return List.of(new ChessMove(startPosition, new ChessPosition(1,1), null));
 
@@ -61,6 +62,7 @@ public class ChessMoveCalculator {
                         col += dir[1];
                     }
                 }
+                return validMoves;
 
             case KNIGHT:
                 return List.of(new ChessMove(startPosition, new ChessPosition(3,3), null));
