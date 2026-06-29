@@ -34,11 +34,16 @@ public class ChessBoard {
         return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
+    }
+
+    public boolean inBounds(int row, int col) {
+        return (row >= 1 && row <= squares.length) && (col >= 1 && col <= squares.length);
     }
 }
