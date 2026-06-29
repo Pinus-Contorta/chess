@@ -18,10 +18,11 @@ public class ChessPiece {
     //TODO: Do some thinking if this "first move" flag is a good implimentation
     //Stores if the piece has been moved, mostly for pawn openings
     private boolean isFirstMove;
+
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
-        this.isFirstMove = false;
     }
 
     //TODO: Try to understand what these following two methods do for us.
@@ -66,6 +67,8 @@ public class ChessPiece {
     public PieceType getPieceType() {
         return type;
     }
+
+
 
     /**
      * Calculates all the positions a chess piece can move to

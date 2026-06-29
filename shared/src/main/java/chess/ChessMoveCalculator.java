@@ -113,8 +113,37 @@ public class ChessMoveCalculator {
                 return validMoves;
 
             case PAWN:
-                return List.of(new ChessMove(startPosition, new ChessPosition(5,5), null));
+                int direction = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
+                int homeRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 2 : 7;
+                int promoRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 8 : 1;
 
+                int row = startPosition.getRow();
+                int col = startPosition.getColumn();
+
+                ChessPosition oneStep =  new ChessPosition(startPosition.getRow() + direction, startPosition.getColumn());
+                if(board.inBounds(oneStep.getRow(),oneStep.getColumn()) && board.getPiece(oneStep) == null){
+                    isValidMove(board, startPosition, piece, validMoves,oneStep);
+                }
+
+
+                if(row == homeRow){
+                    ChessPosition twoStep =  new ChessPosition(startPosition.getRow() + 2 * direction, startPosition.getColumn());
+                    if(board.getPiece(oneStep) == null){
+                        isValidMove(board, startPosition, piece, validMoves,oneStep);
+                    }
+                }
+
+                for (int dCol : new int[]{-1, 1}) {
+                    ChessPosition diag = new ChessPosition(row + direction, col + dCol);
+                    if (board.inBounds(diag.getRow(), diag.getColumn())) {
+                        ChessPiece occupant = board.getPiece(diag);
+                        if (occupant != null && occupant.getTeamColor() != piece.getTeamColor()) {
+
+                        }
+                    }
+                }
+
+                return validMoves;
         }
 
 
@@ -122,15 +151,23 @@ public class ChessMoveCalculator {
     }
 
     private boolean isValidMove(ChessBoard board, ChessPosition startPosition, ChessPiece piece, List<ChessMove> validMoves, ChessPosition target) {
-        if (board.getPiece(target) == null) {
-            validMoves.add(new ChessMove(startPosition, target, null));
-        } else {
-            //Checks if piece in movepath is a capturable enemy. If it is, then that square is added to validMoves.
-            if (board.getPiece(target).getTeamColor() != piece.getTeamColor()) {
+        //First checks to see if the target is in bounds
+        if(board.inBounds(target.getRow(), target.getColumn())){
+            if (board.getPiece(target) == null) {
                 validMoves.add(new ChessMove(startPosition, target, null));
             }
-            return true;
+            else {
+                //Checks if piece in movepath is a capturable enemy. If it is, then that square is added to validMoves.
+                if (board.getPiece(target).getTeamColor() != piece.getTeamColor()) {
+                    validMoves.add(new ChessMove(startPosition, target, null));
+                }
+                return true;
+            }
+            return false;
+
         }
-        return false;
+        else {
+            return false;
+        }
     }
 }
