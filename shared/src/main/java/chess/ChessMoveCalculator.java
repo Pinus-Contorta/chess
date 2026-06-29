@@ -114,31 +114,51 @@ public class ChessMoveCalculator {
 
             case PAWN:
                 int direction = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
-                int homeRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 2 : 7;
-                int promoRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 8 : 1;
+                int startRow  = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 2 : 7;
+                int promoRow  = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 8 : 1;
 
                 int row = startPosition.getRow();
                 int col = startPosition.getColumn();
 
-                ChessPosition oneStep =  new ChessPosition(startPosition.getRow() + direction, startPosition.getColumn());
-                if(board.inBounds(oneStep.getRow(),oneStep.getColumn()) && board.getPiece(oneStep) == null){
-                    isValidMove(board, startPosition, piece, validMoves,oneStep);
-                }
+                // 1. Forward one — EMPTY square only
+                ChessPosition oneStep = new ChessPosition(row + direction, col);
+                if (board.inBounds(oneStep.getRow(), oneStep.getColumn())
+                        && board.getPiece(oneStep) == null) {
 
+                    //TODO:Remember for when you're studying for the exam that it's the moveset for ALL POSSIBLE PIECES when you promote
+                    if (oneStep.getRow() == promoRow) {
+                        validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.QUEEN));
+                        validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.ROOK));
+                        validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.BISHOP));
+                        validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.KNIGHT));
+                    } else {
+                        validMoves.add(new ChessMove(startPosition, oneStep, null));
+                    }
 
-                if(row == homeRow){
-                    ChessPosition twoStep =  new ChessPosition(startPosition.getRow() + 2 * direction, startPosition.getColumn());
-                    if(board.getPiece(oneStep) == null){
-                        isValidMove(board, startPosition, piece, validMoves,oneStep);
+                    // 2. Forward two — only from start row, and only if one-step was also clear
+                    if (row == startRow) {
+                        ChessPosition twoStep = new ChessPosition(row + 2 * direction, col);
+                        if (board.getPiece(twoStep) == null) {
+                            validMoves.add(new ChessMove(startPosition, twoStep, null));
+                        }
                     }
                 }
 
+                // 3. Diagonal captures — ENEMY only
                 for (int dCol : new int[]{-1, 1}) {
                     ChessPosition diag = new ChessPosition(row + direction, col + dCol);
                     if (board.inBounds(diag.getRow(), diag.getColumn())) {
                         ChessPiece occupant = board.getPiece(diag);
                         if (occupant != null && occupant.getTeamColor() != piece.getTeamColor()) {
 
+                            if (diag.getRow() == promoRow) {
+                                validMoves.add(new ChessMove(startPosition, diag, ChessPiece.PieceType.QUEEN));
+                                validMoves.add(new ChessMove(startPosition, diag, ChessPiece.PieceType.ROOK));
+                                validMoves.add(new ChessMove(startPosition, diag, ChessPiece.PieceType.BISHOP));
+                                validMoves.add(new ChessMove(startPosition, diag, ChessPiece.PieceType.KNIGHT));
+                            } else {
+                                validMoves.add(new ChessMove(startPosition, diag, null));
+                            }
                         }
                     }
                 }
