@@ -46,7 +46,22 @@ public class ChessMoveCalculator {
 
 
             case QUEEN:
-                return List.of(new ChessMove(startPosition, new ChessPosition(1,1), null));
+                for (int[] dir : QUEEN_DIR){
+                    int row = startPosition.getRow() + dir[0];
+                    int col = startPosition.getColumn() + dir[1];
+
+                    while (board.inBounds(row, col)) {
+                        ChessPosition target = new ChessPosition(row, col);
+
+                        if (isValidMove(board, startPosition, piece, validMoves, target)) {
+                            break;
+                        }
+
+                        row += dir[0];
+                        col += dir[1];
+                    }
+                }
+                return validMoves;
 
             case BISHOP:
                 //return List.of(new ChessMove(startPosition, new ChessPosition(2,2), null));
