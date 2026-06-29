@@ -45,7 +45,28 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+            ChessPiece.PieceType[] backRank = {
+                    ChessPiece.PieceType.ROOK,
+                    ChessPiece.PieceType.KNIGHT,
+                    ChessPiece.PieceType.BISHOP,
+                    ChessPiece.PieceType.QUEEN,
+                    ChessPiece.PieceType.KING,
+                    ChessPiece.PieceType.BISHOP,
+                    ChessPiece.PieceType.KNIGHT,
+                    ChessPiece.PieceType.ROOK
+            };
+
+            for (int col = 1; col <= 8; col++) {
+                ChessPiece.PieceType type = backRank[col - 1];   // array is 0-indexed, board is 1-indexed
+
+                // Back ranks: white on 1, black on 8
+                addPiece(new ChessPosition(1, col), new ChessPiece(ChessGame.TeamColor.WHITE, type));
+                addPiece(new ChessPosition(8, col), new ChessPiece(ChessGame.TeamColor.BLACK, type));
+
+                // Pawn ranks: white on 2, black on 7
+                addPiece(new ChessPosition(2, col), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+                addPiece(new ChessPosition(7, col), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+            }
     }
 
     public boolean inBounds(int row, int col) {

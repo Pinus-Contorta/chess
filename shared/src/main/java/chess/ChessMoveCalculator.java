@@ -167,7 +167,7 @@ public class ChessMoveCalculator {
         }
 
 
-        return validMoves;
+        return null;
     }
 
     private boolean isValidMove(ChessBoard board, ChessPosition startPosition, ChessPiece piece, List<ChessMove> validMoves, ChessPosition target) {
