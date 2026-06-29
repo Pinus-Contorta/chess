@@ -32,7 +32,17 @@ public class ChessMoveCalculator {
 
         switch (piece.getPieceType()) {
             case KING:
-                return List.of(new ChessMove(startPosition, new ChessPosition(0,0), null));
+                for(int[] dir : KING_DIR){
+                    int row = startPosition.getRow() + dir[0];
+                    int col = startPosition.getColumn() + dir[1];
+
+                    ChessPosition target = new ChessPosition(row, col);
+                    if (board.inBounds(row,col)) {
+                        isValidMove(board, startPosition, piece, validMoves, target);
+                    }
+
+                }
+                return validMoves;
 
 
             case QUEEN:
@@ -47,14 +57,7 @@ public class ChessMoveCalculator {
                     while (board.inBounds(row, col)) {
                         ChessPosition target = new ChessPosition(row, col);
 
-                        if(board.getPiece(target) == null) {
-                            validMoves.add(new ChessMove(startPosition, target, null));
-                        }
-                        else {
-                            //Checks if piece in movepath is a capturable enemy. If it is, then that square is added to validMoves.
-                            if (board.getPiece(target).getTeamColor() != piece.getTeamColor()) {
-                                validMoves.add(new ChessMove(startPosition, target, null));
-                            }
+                        if (isValidMove(board, startPosition, piece, validMoves, target)) {
                             break;
                         }
 
@@ -77,5 +80,18 @@ public class ChessMoveCalculator {
 
 
         return validMoves;
+    }
+
+    private boolean isValidMove(ChessBoard board, ChessPosition startPosition, ChessPiece piece, List<ChessMove> validMoves, ChessPosition target) {
+        if (board.getPiece(target) == null) {
+            validMoves.add(new ChessMove(startPosition, target, null));
+        } else {
+            //Checks if piece in movepath is a capturable enemy. If it is, then that square is added to validMoves.
+            if (board.getPiece(target).getTeamColor() != piece.getTeamColor()) {
+                validMoves.add(new ChessMove(startPosition, target, null));
+            }
+            return true;
+        }
+        return false;
     }
 }
