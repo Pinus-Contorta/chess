@@ -132,21 +132,32 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if (this.board != null) {
             ChessPiece movingPiece = board.getPiece(move.getStartPosition());
+            if(movingPiece != null && movingPiece.getTeamColor() == teamTurn) {
 
-            int startRow = move.getStartPosition().getRow();
-            int startCol = move.getStartPosition().getColumn();
+                if (validMoves(move.getStartPosition()).contains(move)) {
 
-            int endRow = move.getEndPosition().getRow();
-            int endCol = move.getEndPosition().getColumn();
+                    //Sets end position to data of movingPiece
+                    if(move.getPromotionPiece() != null){
+                        board.addPiece(move.getEndPosition(), new ChessPiece(teamTurn, move.getPromotionPiece()));
+                    }
+                    else{
+                        board.addPiece(move.getEndPosition(), movingPiece);
+                    }
 
-            if (validMoves(move.getStartPosition()).contains(move)) {
+                    //Sets point of origin to null
+                    board.addPiece(move.getStartPosition(), null);
 
-                //Sets end position to data of movingPiece
-                board.squares[endRow][endCol] = movingPiece;
-
-                //Sets point of origin to null
-                board.squares[startRow][endRow] = null;
+                    teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+                } else {
+                    throw new InvalidMoveException("Move not held in validMoves");
+                }
             }
+            else {
+                throw new InvalidMoveException("Move not held in validMoves");
+            }
+        }
+        else {
+            throw new InvalidMoveException("Move not held in validMoves");
         }
     }
 
@@ -190,14 +201,26 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        ChessPosition kingPosition = findKing(board, teamColor);
 
-        if (validMoves(kingPosition).isEmpty()) {
-            return true;
-        } else {
+    //We cant use findKing because you have to look at the moves of all pieces to see if one of them has a move that can break check.
+    public boolean isInCheckmate(TeamColor teamColor) {
+
+        if (!isInCheck(teamColor)) {
             return false;
         }
+
+        for (int row = 1; row <= board.squares.length; row++) {
+            for (int col = 1; col <= board.squares.length; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    if (!validMoves(pos).isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -237,7 +260,9 @@ public class ChessGame {
 
             for(int col = 1; col <= board.squares.length; col++) {
 
-                ChessPiece targetPiece = board.getPiece(new ChessPosition(row, col));
+                ChessPosition targetPosition = new ChessPosition(row, col);
+
+                ChessPiece targetPiece = board.getPiece(targetPosition);
 
                 if ((targetPiece != null) && (targetPiece.getTeamColor() == teamColor) && (targetPiece.getPieceType() == ChessPiece.PieceType.KING)) {
                     kingPosition = new ChessPosition(row,col);
