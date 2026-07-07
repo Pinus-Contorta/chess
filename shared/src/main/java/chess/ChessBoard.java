@@ -83,6 +83,11 @@ public class ChessBoard {
     }
 
     @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
     }
