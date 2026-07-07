@@ -67,8 +67,27 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> initMoveSet = new ChessMoveCalculator(board.getPiece(startPosition)).getValidMoves(board, startPosition, board.getPiece(startPosition));
-        Collection<ChessMove> validMoveSet = initMoveSet;
+        Collection<ChessMove> validMoveSet = new ChessMoveCalculator(board.getPiece(startPosition)).getValidMoves(board, startPosition, board.getPiece(startPosition));
+
+
+        for (int row = 1; row <= board.squares.length; row++) {
+
+            for (int col = 1; col <= board.squares.length; col++) {
+
+                ChessPosition targetPosition = new ChessPosition(row, col);
+                ChessPiece targetPiece = board.getPiece(targetPosition);
+
+                if ((board.getPiece(targetPosition) != null) && (targetPiece.getTeamColor() != board.getPiece(startPosition).getTeamColor())){
+                    Collection<ChessMove> targetMoves = new ChessMoveCalculator(targetPiece).getValidMoves(board, targetPosition, targetPiece);
+
+                    for (ChessMove targetMove : targetMoves){
+                        validMoveSet.removeIf(subjectMove -> subjectMove.getEndPosition().equals(targetMove.getEndPosition()));
+
+                    }
+                }
+
+            }
+        }
 
         return validMoveSet;
     }
