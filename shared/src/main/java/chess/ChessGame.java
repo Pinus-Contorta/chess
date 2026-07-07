@@ -13,11 +13,16 @@ import java.util.Objects;
 public class ChessGame {
 
     private ChessBoard board;
+
     public TeamColor teamTurn;
 
     public ChessGame() {
 
         teamTurn = TeamColor.WHITE;
+
+        board = new ChessBoard();
+
+        board.resetBoard();
     }
 
     /**
@@ -125,7 +130,24 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        if (this.board != null) {
+            ChessPiece movingPiece = board.getPiece(move.getStartPosition());
+
+            int startRow = move.getStartPosition().getRow();
+            int startCol = move.getStartPosition().getColumn();
+
+            int endRow = move.getEndPosition().getRow();
+            int endCol = move.getEndPosition().getColumn();
+
+            if (validMoves(move.getStartPosition()).contains(move)) {
+
+                //Sets end position to data of movingPiece
+                board.squares[endRow][endCol] = movingPiece;
+
+                //Sets point of origin to null
+                board.squares[startRow][endRow] = null;
+            }
+        }
     }
 
     /**
