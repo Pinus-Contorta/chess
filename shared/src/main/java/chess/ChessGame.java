@@ -124,7 +124,7 @@ public class ChessGame {
 
                     for (ChessMove move : targetMoves){
 
-                        if (move.getEndPosition() == kingPosition) {
+                        if (move.getEndPosition().equals(kingPosition)) {
                             return true;
                         }
                     }
