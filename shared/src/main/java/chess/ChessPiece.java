@@ -80,7 +80,7 @@ public class ChessPiece {
 
     //Presently references ChessMoveCalculator which handles computaion and returns a sorted list of valid chess moves
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        //TODO: This is a brute force override and this must be properly implimented before submission
+
         ChessMoveCalculator piece = new ChessMoveCalculator(board.getPiece(myPosition));
 
         return piece.getValidMoves(board, myPosition, this);

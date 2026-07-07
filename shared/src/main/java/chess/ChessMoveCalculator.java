@@ -25,7 +25,7 @@ public class ChessMoveCalculator {
 
 
     // This method takes the start position and the piece being moved and generates a list of all legal moves, barring those which would put the king piece in danger
-    //TODO: In the middle of implimenting the PAWN. Needs to handle promotion.
+
     public Collection<ChessMove> getValidMoves(ChessBoard board,ChessPosition startPosition, ChessPiece piece) {
 
         List<ChessMove> validMoves = new ArrayList<>();
