@@ -105,4 +105,13 @@ public class ChessBoard implements Cloneable {
     public int hashCode() {
         return Arrays.deepHashCode(squares);
     }
+
+
+    public ChessMove getLastMoveMade() {
+        return lastMoveMade;
+    }
+
+    public void setLastMoveMade(ChessMove lastMoveMade) {
+        this.lastMoveMade = lastMoveMade;
+    }
 }

@@ -10,9 +10,13 @@ import java.util.Objects;
  */
 public class ChessMove {
 
+    //TODO: En Passant is screwy and a bit messy right now. This could be a good place to try and trim down.
+
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
+
+    private boolean isEnPassant = false;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
@@ -71,5 +75,14 @@ public class ChessMove {
     @Override
     public int hashCode() {
         return Objects.hash(startPosition, endPosition, promotionPiece);
+    }
+
+
+    public boolean isEnPassant() {
+        return isEnPassant;
+    }
+
+    public void setEnPassant(boolean enPassant) {
+        isEnPassant = enPassant;
     }
 }

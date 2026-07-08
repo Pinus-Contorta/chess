@@ -86,8 +86,23 @@ public class ChessGame {
                 ChessBoard clonedBoard = (ChessBoard) board.clone();
 
                 ChessPiece pieceToMove = clonedBoard.getPiece(move.getStartPosition());
+
+                boolean isDiagonalMove =
+                        move.getStartPosition().getColumn() != move.getEndPosition().getColumn();
+                boolean isPawnMove = pieceToMove.getPieceType() == ChessPiece.PieceType.PAWN;
+                boolean destinationEmpty = clonedBoard.getPiece(move.getEndPosition()) == null;
+                boolean isEnPassantCapture = isPawnMove && isDiagonalMove && destinationEmpty;
+
+
                 clonedBoard.addPiece(move.getEndPosition(), pieceToMove);
                 clonedBoard.addPiece(move.getStartPosition(), null);
+
+
+                if (isEnPassantCapture) {
+                    ChessPosition capturedPawnPosition =
+                            new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());
+                    clonedBoard.addPiece(capturedPawnPosition, null);
+                }
 
                 if (!wouldBeInCheck(teamColor, clonedBoard)) {
                     safeMoves.add(move);
@@ -136,6 +151,12 @@ public class ChessGame {
 
                 if (validMoves(move.getStartPosition()).contains(move)) {
 
+                    boolean isDiagonalMove = move.getStartPosition().getColumn() != move.getEndPosition().getColumn();
+                    boolean isPawnMove = movingPiece.getPieceType() == ChessPiece.PieceType.PAWN;
+                    boolean destinationEmpty = board.getPiece(move.getEndPosition()) == null;
+
+                    boolean isEnPassantCapture = isPawnMove && isDiagonalMove && destinationEmpty;
+
                     //Sets end position to data of movingPiece
                     if(move.getPromotionPiece() != null){
                         board.addPiece(move.getEndPosition(), new ChessPiece(teamTurn, move.getPromotionPiece()));
@@ -144,8 +165,16 @@ public class ChessGame {
                         board.addPiece(move.getEndPosition(), movingPiece);
                     }
 
+                    if (isEnPassantCapture) {
+                        ChessPosition capturedPawnPosition =
+                                new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());
+                        board.addPiece(capturedPawnPosition, null);
+                    }
+
                     //Sets point of origin to null
                     board.addPiece(move.getStartPosition(), null);
+
+                    board.setLastMoveMade(move);
 
                     teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
                 } else {
