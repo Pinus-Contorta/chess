@@ -93,15 +93,34 @@ public class ChessGame {
                 boolean destinationEmpty = clonedBoard.getPiece(move.getEndPosition()) == null;
                 boolean isEnPassantCapture = isPawnMove && isDiagonalMove && destinationEmpty;
 
+                boolean isCastle = pieceToMove.getPieceType() == ChessPiece.PieceType.KING && Math.abs(move.getStartPosition().getColumn() - move.getEndPosition().getColumn()) == 2;
+
 
                 clonedBoard.addPiece(move.getEndPosition(), pieceToMove);
                 clonedBoard.addPiece(move.getStartPosition(), null);
 
 
+                //For En Passant
                 if (isEnPassantCapture) {
                     ChessPosition capturedPawnPosition =
                             new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());
                     clonedBoard.addPiece(capturedPawnPosition, null);
+                }
+
+                //For Castling
+                if (isCastle) {
+                    int row = move.getStartPosition().getRow();
+                    boolean kingside = move.getEndPosition().getColumn() == 7;
+
+                    int rookStartCol = kingside ? 8 : 1;
+                    int rookEndCol = kingside ? 6 : 4;
+
+                    ChessPosition rookStart = new ChessPosition(row, rookStartCol);
+                    ChessPosition rookEnd = new ChessPosition(row, rookEndCol);
+
+                    ChessPiece rook = clonedBoard.getPiece(rookStart);
+                    clonedBoard.addPiece(rookEnd, rook);
+                    clonedBoard.addPiece(rookStart, null);
                 }
 
                 if (!wouldBeInCheck(teamColor, clonedBoard)) {
@@ -167,6 +186,47 @@ public class ChessGame {
 
                     movingPiece.setFirstMove(false);
 
+
+                    if (movingPiece.getPieceType() == ChessPiece.PieceType.KING) {
+
+                        board.disableCastleKingside(teamTurn);
+                        board.disableCastleQueenside(teamTurn);
+
+                    }
+                    else if (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
+
+                        ChessPosition start = move.getStartPosition();
+                        if (start.getColumn() == 1) {
+
+                            board.disableCastleQueenside(teamTurn);
+                        }
+                        else if (start.getColumn() == 8) {
+
+                            board.disableCastleKingside(teamTurn);
+                        }
+                    }
+
+                    //For Castling
+                    boolean isCastle =
+                            movingPiece.getPieceType() == ChessPiece.PieceType.KING
+                                    && Math.abs(move.getStartPosition().getColumn() - move.getEndPosition().getColumn()) == 2;
+
+                    if (isCastle) {
+                        int row = move.getStartPosition().getRow();
+                        boolean kingside = move.getEndPosition().getColumn() == 7;
+
+                        int rookStartCol = kingside ? 8 : 1;
+                        int rookEndCol = kingside ? 6 : 4;
+
+                        ChessPosition rookStart = new ChessPosition(row, rookStartCol);
+                        ChessPosition rookEnd = new ChessPosition(row, rookEndCol);
+
+                        ChessPiece rook = board.getPiece(rookStart);
+                        board.addPiece(rookEnd, rook);
+                        board.addPiece(rookStart, null);
+                    }
+
+                    //For En Passant
                     if (isEnPassantCapture) {
                         ChessPosition capturedPawnPosition =
                                 new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());

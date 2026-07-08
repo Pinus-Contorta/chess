@@ -45,13 +45,16 @@ public class ChessMoveCalculator {
 
                 // Castling
 
-                if (piece.isFirstMove() && !isSquareUnderAttack(board, startPosition, piece.getTeamColor())) {
-
+                if (!isSquareUnderAttack(board, startPosition, piece.getTeamColor())) {
                     int row = startPosition.getRow();
 
-                    tryAddCastleMove(board, startPosition, piece, validMoves, row, 8, 6, 7);
-                    tryAddCastleMove(board, startPosition, piece, validMoves, row, 1, 2, 3);
-                }
+                    if (board.canCastleKingside(piece.getTeamColor())) {
+                        tryAddCastleMove(board, startPosition, piece, validMoves, row, 8, 7, 6); // <-- THIS LINE
+                    }
+                    if (board.canCastleQueenside(piece.getTeamColor())) {
+                        tryAddCastleMove(board, startPosition, piece, validMoves, row, 1, 3, 4); // <-- AND THIS LINE
+                    }
+                  }
                 return validMoves;
 
 
@@ -232,26 +235,26 @@ public class ChessMoveCalculator {
         ChessPosition rookPos = new ChessPosition(row, rookCol);
         ChessPiece rook = board.getPiece(rookPos);
 
-        if (rook == null || rook.getPieceType() != ChessPiece.PieceType.ROOK || rook.getTeamColor() != king.getTeamColor() || !rook.isFirstMove()) {
+        if (rook == null || rook.getPieceType() != ChessPiece.PieceType.ROOK || rook.getTeamColor() != king.getTeamColor()) {
+            System.out.println("Rook check failed at col " + rookCol + ": rook=" + rook);
             return;
         }
 
-        // Check all squares between king and rook are empty
         int step = (rookCol > kingStart.getColumn()) ? 1 : -1;
-
         for (int col = kingStart.getColumn() + step; col != rookCol; col += step) {
-
             if (board.getPiece(new ChessPosition(row, col)) != null) {
+                System.out.println("Blocked at col " + col);
                 return;
             }
-
         }
 
-        // King must not pass through or land on an attacked square
-        if (isSquareUnderAttack(board, new ChessPosition(row, passThroughCol), king.getTeamColor()) || isSquareUnderAttack(board, new ChessPosition(row, kingDestCol), king.getTeamColor())) {
+        if (isSquareUnderAttack(board, new ChessPosition(row, passThroughCol), king.getTeamColor())
+                || isSquareUnderAttack(board, new ChessPosition(row, kingDestCol), king.getTeamColor())) {
+            System.out.println("Path or destination attacked for rookCol=" + rookCol);
             return;
         }
 
+        System.out.println("Adding castle move to col " + kingDestCol);
         validMoves.add(new ChessMove(kingStart, new ChessPosition(row, kingDestCol), null));
     }
 

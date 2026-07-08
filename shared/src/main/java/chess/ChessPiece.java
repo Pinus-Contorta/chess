@@ -31,12 +31,12 @@ public class ChessPiece {
             return false;
         }
         ChessPiece that = (ChessPiece) o;
-        return isFirstMove == that.isFirstMove && pieceColor == that.pieceColor && type == that.type;
+        return pieceColor == that.pieceColor && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pieceColor, type, isFirstMove);
+        return Objects.hash(pieceColor, type);
     }
 
     //VERY IMPORTANT

@@ -13,6 +13,11 @@ public class ChessBoard implements Cloneable {
 
     private ChessMove lastMoveMade;
 
+    private boolean whiteKingsideCastle = true;
+    private boolean whiteQueensideCastle = true;
+    private boolean blackKingsideCastle = true;
+    private boolean blackQueensideCastle = true;
+
     ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
         this.lastMoveMade = null;
@@ -126,5 +131,23 @@ public class ChessBoard implements Cloneable {
 
     public void setLastMoveMade(ChessMove lastMoveMade) {
         this.lastMoveMade = lastMoveMade;
+    }
+
+    public boolean canCastleKingside(ChessGame.TeamColor color) {
+        return color == ChessGame.TeamColor.WHITE ? whiteKingsideCastle : blackKingsideCastle;
+    }
+
+    public boolean canCastleQueenside(ChessGame.TeamColor color) {
+        return color == ChessGame.TeamColor.WHITE ? whiteQueensideCastle : blackQueensideCastle;
+    }
+
+    public void disableCastleKingside(ChessGame.TeamColor color) {
+        if (color == ChessGame.TeamColor.WHITE) whiteKingsideCastle = false;
+        else blackKingsideCastle = false;
+    }
+
+    public void disableCastleQueenside(ChessGame.TeamColor color) {
+        if (color == ChessGame.TeamColor.WHITE) whiteQueensideCastle = false;
+        else blackQueensideCastle = false;
     }
 }
