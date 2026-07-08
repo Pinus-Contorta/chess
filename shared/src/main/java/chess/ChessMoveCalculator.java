@@ -125,7 +125,6 @@ public class ChessMoveCalculator {
                 if (board.inBounds(oneStep.getRow(), oneStep.getColumn())
                         && board.getPiece(oneStep) == null) {
 
-                    //TODO:Remember for when you're studying for the exam that it's the moveset for ALL POSSIBLE PIECES when you promote
                     if (oneStep.getRow() == promoRow) {
                         validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.QUEEN));
                         validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.ROOK));
@@ -160,6 +159,32 @@ public class ChessMoveCalculator {
                                 validMoves.add(new ChessMove(startPosition, diag, null));
                             }
                         }
+                    }
+                }
+
+                // 4. En passant
+                ChessMove lastMove = board.getLastMoveMade();
+
+                if (lastMove != null) {
+                    ChessPosition lastEnd = lastMove.getEndPosition();
+                    ChessPosition lastStart = lastMove.getStartPosition();
+                    ChessPiece lastMovedPiece = board.getPiece(lastEnd);
+
+                    boolean wasTwoSquarePawnMove =
+                            lastMovedPiece != null
+                                    && lastMovedPiece.getPieceType() == ChessPiece.PieceType.PAWN
+                                    && Math.abs(lastEnd.getRow() - lastStart.getRow()) == 2;
+
+                    boolean isAdjacent =
+                            wasTwoSquarePawnMove
+                                    && lastEnd.getRow() == row
+                                    && Math.abs(lastEnd.getColumn() - col) == 1;
+
+                    if (isAdjacent) {
+                        ChessPosition enPassantEnd = new ChessPosition(row + direction, lastEnd.getColumn());
+                        ChessMove enPassantMove = new ChessMove(startPosition, enPassantEnd, null);
+                        enPassantMove.setEnPassant(true);
+                        validMoves.add(enPassantMove);
                     }
                 }
 
