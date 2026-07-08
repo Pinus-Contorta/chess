@@ -165,6 +165,8 @@ public class ChessGame {
                         board.addPiece(move.getEndPosition(), movingPiece);
                     }
 
+                    movingPiece.setFirstMove(false);
+
                     if (isEnPassantCapture) {
                         ChessPosition capturedPawnPosition =
                                 new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());

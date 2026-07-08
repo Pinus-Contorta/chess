@@ -56,6 +56,8 @@ public class ChessBoard implements Cloneable {
                     ChessPiece.PieceType.BISHOP,
                     ChessPiece.PieceType.KNIGHT,
                     ChessPiece.PieceType.ROOK
+
+
             };
 
             for (int col = 1; col <= 8; col++) {
@@ -69,6 +71,17 @@ public class ChessBoard implements Cloneable {
                 addPiece(new ChessPosition(2, col), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
                 addPiece(new ChessPosition(7, col), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
             }
+
+            //To enable castling by making sure each of the pieces have their isFirstMove flag reset on a board reset.
+            for (int row = 1; row <= 8; row++) {
+                for (int col = 1; col <= 8; col++) {
+                    ChessPiece piece = getPiece(new ChessPosition(row, col));
+                    if (piece != null) {
+                        piece.setFirstMove(true);
+                    }
+                }
+            }
+
     }
 
     public boolean inBounds(int row, int col) {
