@@ -11,9 +11,11 @@ import java.util.Objects;
  */
 public class ChessBoard implements Cloneable {
 
+    private ChessMove lastMoveMade;
+
     ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
-        
+        this.lastMoveMade = null;
     }
 
     /**

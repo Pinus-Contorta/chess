@@ -15,10 +15,8 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
 
-    //TODO: Do some thinking if this "first move" flag is a good implimentation
-    //Stores if the piece has been moved, mostly for pawn openings
-    private boolean isFirstMove;
 
+    private boolean isFirstMove =  false;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -84,5 +82,13 @@ public class ChessPiece {
         ChessMoveCalculator piece = new ChessMoveCalculator(board.getPiece(myPosition));
 
         return piece.getValidMoves(board, myPosition, this);
+    }
+
+    public boolean isFirstMove() {
+        return isFirstMove;
+    }
+
+    public void setFirstMove(boolean firstMove) {
+        isFirstMove = firstMove;
     }
 }
