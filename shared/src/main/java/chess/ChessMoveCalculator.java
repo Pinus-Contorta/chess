@@ -16,11 +16,8 @@ public class ChessMoveCalculator {
     private static final int[][] ROOK_DIR = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 
 
-    private final ChessPiece piece;
-
     public ChessMoveCalculator(ChessPiece piece) {
 
-        this.piece = piece;
     }
 
 
@@ -32,19 +29,9 @@ public class ChessMoveCalculator {
 
         switch (piece.getPieceType()) {
             case KING:
-                for (int[] dir : KING_DIR) {
-                    int row = startPosition.getRow() + dir[0];
-                    int col = startPosition.getColumn() + dir[1];
-
-                    ChessPosition target = new ChessPosition(row, col);
-                    if (board.inBounds(row, col)) {
-                        isValidMove(board, startPosition, piece, validMoves, target);
-                    }
-
-                }
+                stepPieceCheck(board, startPosition, piece, validMoves, KING_DIR);
 
                 // Castling
-
                 if (!isSquareUnderAttack(board, startPosition, piece.getTeamColor())) {
                     int row = startPosition.getRow();
 
@@ -59,70 +46,19 @@ public class ChessMoveCalculator {
 
 
             case QUEEN:
-                for (int[] dir : QUEEN_DIR) {
-                    int row = startPosition.getRow() + dir[0];
-                    int col = startPosition.getColumn() + dir[1];
-
-                    while (board.inBounds(row, col)) {
-                        ChessPosition target = new ChessPosition(row, col);
-
-                        if (isValidMove(board, startPosition, piece, validMoves, target)) {
-                            break;
-                        }
-
-                        row += dir[0];
-                        col += dir[1];
-                    }
-                }
+                railPieceCheck(board, startPosition, piece, validMoves, QUEEN_DIR);
                 return validMoves;
 
             case BISHOP:
-                for (int[] dir : BISHOP_DIR) {
-                    int row = startPosition.getRow() + dir[0];
-                    int col = startPosition.getColumn() + dir[1];
-
-                    while (board.inBounds(row, col)) {
-                        ChessPosition target = new ChessPosition(row, col);
-
-                        if (isValidMove(board, startPosition, piece, validMoves, target)) {
-                            break;
-                        }
-
-                        row += dir[0];
-                        col += dir[1];
-                    }
-                }
+                railPieceCheck(board, startPosition, piece, validMoves, BISHOP_DIR);
                 return validMoves;
 
             case KNIGHT:
-                for (int[] dir : KNIGHT_DIR) {
-                    int row = startPosition.getRow() + dir[0];
-                    int col = startPosition.getColumn() + dir[1];
-
-                    ChessPosition target = new ChessPosition(row, col);
-                    if (board.inBounds(row, col)) {
-                        isValidMove(board, startPosition, piece, validMoves, target);
-                    }
-
-                }
+                stepPieceCheck(board, startPosition, piece, validMoves, KNIGHT_DIR);
                 return validMoves;
 
             case ROOK:
-                for (int[] dir : ROOK_DIR) {
-                    int row = startPosition.getRow() + dir[0];
-                    int col = startPosition.getColumn() + dir[1];
-
-                    while (board.inBounds(row, col)) {
-                        ChessPosition target = new ChessPosition(row, col);
-
-                        if (isValidMove(board, startPosition, piece, validMoves, target)) {
-                            break;
-                        }
-
-                        row += dir[0];
-                        col += dir[1];
-                    }
-                }
+                railPieceCheck(board, startPosition, piece, validMoves, ROOK_DIR);
                 return validMoves;
 
             case PAWN:
@@ -132,20 +68,11 @@ public class ChessMoveCalculator {
 
                 int row = startPosition.getRow();
                 int col = startPosition.getColumn();
-
                 // 1. Forward one — EMPTY square only
                 ChessPosition oneStep = new ChessPosition(row + direction, col);
-                if (board.inBounds(oneStep.getRow(), oneStep.getColumn())
-                        && board.getPiece(oneStep) == null) {
+                if (board.inBounds(oneStep.getRow(), oneStep.getColumn()) && board.getPiece(oneStep) == null) {
 
-                    if (oneStep.getRow() == promoRow) {
-                        validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.QUEEN));
-                        validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.ROOK));
-                        validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.BISHOP));
-                        validMoves.add(new ChessMove(startPosition, oneStep, ChessPiece.PieceType.KNIGHT));
-                    } else {
-                        validMoves.add(new ChessMove(startPosition, oneStep, null));
-                    }
+                    promotionRowCheck(startPosition, validMoves, promoRow, oneStep);
 
                     // 2. Forward two — only from start row, and only if one-step was also clear
                     if (row == startRow) {
@@ -155,7 +82,6 @@ public class ChessMoveCalculator {
                         }
                     }
                 }
-
                 // 3. Diagonal captures — ENEMY only
                 for (int dCol : new int[]{-1, 1}) {
                     ChessPosition diag = new ChessPosition(row + direction, col + dCol);
@@ -163,18 +89,10 @@ public class ChessMoveCalculator {
                         ChessPiece occupant = board.getPiece(diag);
                         if (occupant != null && occupant.getTeamColor() != piece.getTeamColor()) {
 
-                            if (diag.getRow() == promoRow) {
-                                validMoves.add(new ChessMove(startPosition, diag, ChessPiece.PieceType.QUEEN));
-                                validMoves.add(new ChessMove(startPosition, diag, ChessPiece.PieceType.ROOK));
-                                validMoves.add(new ChessMove(startPosition, diag, ChessPiece.PieceType.BISHOP));
-                                validMoves.add(new ChessMove(startPosition, diag, ChessPiece.PieceType.KNIGHT));
-                            } else {
-                                validMoves.add(new ChessMove(startPosition, diag, null));
-                            }
+                            promotionRowCheck(startPosition, validMoves, promoRow, diag);
                         }
                     }
                 }
-
                 // 4. En passant
                 ChessMove lastMove = board.getLastMoveMade();
 
@@ -200,12 +118,51 @@ public class ChessMoveCalculator {
                         validMoves.add(enPassantMove);
                     }
                 }
-
                 return validMoves;
         }
-
-
         return null;
+    }
+
+    private void promotionRowCheck(ChessPosition startPosition, List<ChessMove> validMoves, int promoRow, ChessPosition stepType) {
+        if (stepType.getRow() == promoRow) {
+            validMoves.add(new ChessMove(startPosition, stepType, ChessPiece.PieceType.QUEEN));
+            validMoves.add(new ChessMove(startPosition, stepType, ChessPiece.PieceType.ROOK));
+            validMoves.add(new ChessMove(startPosition, stepType, ChessPiece.PieceType.BISHOP));
+            validMoves.add(new ChessMove(startPosition, stepType, ChessPiece.PieceType.KNIGHT));
+        } else {
+            validMoves.add(new ChessMove(startPosition, stepType, null));
+        }
+    }
+
+    private void railPieceCheck(ChessBoard board, ChessPosition startPosition, ChessPiece piece, List<ChessMove> validMoves, int[][] pieceDir) {
+        for (int[] dir : pieceDir) {
+            int row = startPosition.getRow() + dir[0];
+            int col = startPosition.getColumn() + dir[1];
+
+            while (board.inBounds(row, col)) {
+                ChessPosition target = new ChessPosition(row, col);
+
+                if (isValidMove(board, startPosition, piece, validMoves, target)) {
+                    break;
+                }
+
+                row += dir[0];
+                col += dir[1];
+            }
+        }
+    }
+
+    private void stepPieceCheck(ChessBoard board, ChessPosition startPosition, ChessPiece piece, List<ChessMove> validMoves, int[][] pieceDir) {
+        for (int[] dir : pieceDir) {
+            int row = startPosition.getRow() + dir[0];
+            int col = startPosition.getColumn() + dir[1];
+
+            ChessPosition target = new ChessPosition(row, col);
+            if (board.inBounds(row, col)) {
+                isValidMove(board, startPosition, piece, validMoves, target);
+            }
+
+        }
     }
 
     private boolean isValidMove(ChessBoard board, ChessPosition startPosition, ChessPiece piece, List<ChessMove> validMoves, ChessPosition target) {

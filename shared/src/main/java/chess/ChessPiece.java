@@ -23,7 +23,6 @@ public class ChessPiece {
         this.type = type;
     }
 
-    //TODO: Try to understand what these following two methods do for us.
     //VERY IMPORTANT
     @Override
     public boolean equals(Object o) {

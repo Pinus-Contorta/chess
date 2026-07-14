@@ -10,8 +10,6 @@ import java.util.Objects;
  */
 public class ChessMove {
 
-    //TODO: En Passant is screwy and a bit messy right now. This could be a good place to try and trim down.
-
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
@@ -57,7 +55,6 @@ public class ChessMove {
                 ", promotionPiece=" + promotionPiece +
                 '}';
          */
-        //TODO: This doesn't handle promotion piece representation for pawns. Leave this here until we fix that or know for a fact we do not need it.
         return String.format("%s%s", startPosition, endPosition);
     }
 
@@ -69,7 +66,8 @@ public class ChessMove {
             return false;
         }
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+        return Objects.equals(startPosition, chessMove.startPosition)
+                && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
 
     @Override

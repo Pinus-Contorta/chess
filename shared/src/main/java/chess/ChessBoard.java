@@ -142,12 +142,12 @@ public class ChessBoard implements Cloneable {
     }
 
     public void disableCastleKingside(ChessGame.TeamColor color) {
-        if (color == ChessGame.TeamColor.WHITE) whiteKingsideCastle = false;
-        else blackKingsideCastle = false;
+        if (color == ChessGame.TeamColor.WHITE) {whiteKingsideCastle = false;}
+        else {blackKingsideCastle = false;}
     }
 
     public void disableCastleQueenside(ChessGame.TeamColor color) {
-        if (color == ChessGame.TeamColor.WHITE) whiteQueensideCastle = false;
-        else blackQueensideCastle = false;
+        if (color == ChessGame.TeamColor.WHITE) {whiteQueensideCastle = false;}
+        else {blackQueensideCastle = false;}
     }
 }

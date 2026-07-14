@@ -74,7 +74,8 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
 
         if (board.getPiece(startPosition) != null) {
-            Collection<ChessMove> candidateMoves = new ChessMoveCalculator(board.getPiece(startPosition)).getValidMoves(board, startPosition, board.getPiece(startPosition));
+            Collection<ChessMove> candidateMoves =
+                    new ChessMoveCalculator(board.getPiece(startPosition)).getValidMoves(board, startPosition, board.getPiece(startPosition));
 
             ChessPiece movingPiece = board.getPiece(startPosition);
             TeamColor teamColor = movingPiece.getTeamColor();
@@ -93,7 +94,8 @@ public class ChessGame {
                 boolean destinationEmpty = clonedBoard.getPiece(move.getEndPosition()) == null;
                 boolean isEnPassantCapture = isPawnMove && isDiagonalMove && destinationEmpty;
 
-                boolean isCastle = pieceToMove.getPieceType() == ChessPiece.PieceType.KING && Math.abs(move.getStartPosition().getColumn() - move.getEndPosition().getColumn()) == 2;
+                boolean isCastle = pieceToMove.getPieceType() ==
+                        ChessPiece.PieceType.KING && Math.abs(move.getStartPosition().getColumn() - move.getEndPosition().getColumn()) == 2;
 
 
                 clonedBoard.addPiece(move.getEndPosition(), pieceToMove);
@@ -108,20 +110,7 @@ public class ChessGame {
                 }
 
                 //For Castling
-                if (isCastle) {
-                    int row = move.getStartPosition().getRow();
-                    boolean kingside = move.getEndPosition().getColumn() == 7;
-
-                    int rookStartCol = kingside ? 8 : 1;
-                    int rookEndCol = kingside ? 6 : 4;
-
-                    ChessPosition rookStart = new ChessPosition(row, rookStartCol);
-                    ChessPosition rookEnd = new ChessPosition(row, rookEndCol);
-
-                    ChessPiece rook = clonedBoard.getPiece(rookStart);
-                    clonedBoard.addPiece(rookEnd, rook);
-                    clonedBoard.addPiece(rookStart, null);
-                }
+                isInCastle(move, clonedBoard, isCastle);
 
                 if (!wouldBeInCheck(teamColor, clonedBoard)) {
                     safeMoves.add(move);
@@ -131,6 +120,23 @@ public class ChessGame {
             return safeMoves;
         } else {
             return null;
+        }
+    }
+
+    private void isInCastle(ChessMove move, ChessBoard board, boolean isCastle) {
+        if (isCastle) {
+            int row = move.getStartPosition().getRow();
+            boolean kingSide = move.getEndPosition().getColumn() == 7;
+
+            int rookStartCol = kingSide ? 8 : 1;
+            int rookEndCol = kingSide ? 6 : 4;
+
+            ChessPosition rookStart = new ChessPosition(row, rookStartCol);
+            ChessPosition rookEnd = new ChessPosition(row, rookEndCol);
+
+            ChessPiece rook = board.getPiece(rookStart);
+            board.addPiece(rookEnd, rook);
+            board.addPiece(rookStart, null);
         }
     }
 
@@ -211,20 +217,7 @@ public class ChessGame {
                             movingPiece.getPieceType() == ChessPiece.PieceType.KING
                                     && Math.abs(move.getStartPosition().getColumn() - move.getEndPosition().getColumn()) == 2;
 
-                    if (isCastle) {
-                        int row = move.getStartPosition().getRow();
-                        boolean kingside = move.getEndPosition().getColumn() == 7;
-
-                        int rookStartCol = kingside ? 8 : 1;
-                        int rookEndCol = kingside ? 6 : 4;
-
-                        ChessPosition rookStart = new ChessPosition(row, rookStartCol);
-                        ChessPosition rookEnd = new ChessPosition(row, rookEndCol);
-
-                        ChessPiece rook = board.getPiece(rookStart);
-                        board.addPiece(rookEnd, rook);
-                        board.addPiece(rookStart, null);
-                    }
+                    isInCastle(move, board, isCastle);
 
                     //For En Passant
                     if (isEnPassantCapture) {
