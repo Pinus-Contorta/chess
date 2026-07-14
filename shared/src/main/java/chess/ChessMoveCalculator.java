@@ -21,7 +21,8 @@ public class ChessMoveCalculator {
     }
 
 
-    // This method takes the start position and the piece being moved and generates a list of all legal moves, barring those which would put the king piece in danger
+    // This method takes the start position and the piece being moved and generates a list of all legal moves,
+    // barring those which would put the king piece in danger
 
     public Collection<ChessMove> getValidMoves(ChessBoard board, ChessPosition startPosition, ChessPiece piece) {
 
@@ -171,23 +172,22 @@ public class ChessMoveCalculator {
             if (board.getPiece(target) == null) {
                 validMoves.add(new ChessMove(startPosition, target, null));
             } else {
-                //Checks if piece in movepath is a capturable enemy. If it is, then that square is added to validMoves.
+                //Checks if piece in move-path is a capture-able enemy. If it is, then that square is added to validMoves.
                 if (board.getPiece(target).getTeamColor() != piece.getTeamColor()) {
                     validMoves.add(new ChessMove(startPosition, target, null));
                 }
                 return true;
             }
-            return false;
 
-        } else {
-            return false;
         }
+        return false;
     }
 
 
     //Helper methods for Castling
 
-    private void tryAddCastleMove(ChessBoard board, ChessPosition kingStart, ChessPiece king, List<ChessMove> validMoves, int row, int rookCol, int kingDestCol, int passThroughCol) {
+    private void tryAddCastleMove(ChessBoard board, ChessPosition kingStart, ChessPiece king,
+                                  List<ChessMove> validMoves, int row, int rookCol, int kingDestCol, int passThroughCol) {
 
         ChessPosition rookPos = new ChessPosition(row, rookCol);
         ChessPiece rook = board.getPiece(rookPos);
