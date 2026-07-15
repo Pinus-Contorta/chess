@@ -30,6 +30,7 @@ public class Server {
         ClearApplicationHandler clearApplicationHandler = new ClearApplicationHandler(clearService);
         ListGamesHandler listGamesHandler = new ListGamesHandler(gameService);
         CreateGameHandler createGameHandler = new CreateGameHandler(gameService);
+        JoinGameHandler joinGameHandler = new JoinGameHandler(gameService);
 
         //DELETE
         javalin.delete("/db", clearApplicationHandler::handle);
@@ -40,9 +41,8 @@ public class Server {
         javalin.post("/game", createGameHandler::handle);
         //GET
         javalin.get("/game", listGamesHandler::handle);
-
-
-
+        //PUT
+        javalin.put("/game", joinGameHandler::handle);
     }
 
     public int run(int desiredPort) {

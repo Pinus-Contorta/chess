@@ -63,4 +63,23 @@ public class GameServiceTest {
         assertThrows(DataAccessException.class, () -> gameService.createGame(authToken,new CreateGameRequest(null)));
     }
 
+    //JOIN GAME TESTS
+
+    public void joinGameSuccess() throws DataAccessException {
+        CreateGameResult created = gameService.createGame(authToken, new CreateGameRequest("thisGame"));
+
+        gameService.joinGame(authToken, new JoinGameRequest("WHITE", created.gameID()));
+
+        GameData game = gameDAO.getGame(created.gameID());
+        assertEquals("bobert", game.whiteUsername());
+    }
+
+    @Test
+    public void joinGameAlreadyTakenFails() throws DataAccessException {
+        CreateGameResult created = gameService.createGame(authToken, new CreateGameRequest("thisGame"));
+        gameService.joinGame(authToken, new JoinGameRequest("WHITE", created.gameID()));
+
+        assertThrows(DataAccessException.class,
+                () -> gameService.joinGame(authToken, new JoinGameRequest("WHITE", created.gameID())));
+    }
 }
