@@ -140,7 +140,7 @@ public class ChessGame {
         }
     }
 
-    //Depricated wouldBeInCheck that was too deeply nested for auto-grader.
+    //Deprecated wouldBeInCheck that was too deeply nested for auto-grader.
     /*
     private boolean wouldBeInCheck(TeamColor teamColor, ChessBoard board) {
         ChessPosition kingPosition = findKing(board, teamColor);
@@ -172,7 +172,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
 
-    //Depricated isInCheck that was too deeply nested for auto-grader.
+    //Deprecated isInCheck that was too deeply nested for auto-grader.
     /*
     public boolean isInCheck(TeamColor teamColor) {
 
@@ -195,7 +195,6 @@ public class ChessGame {
                         }
                     }
                 }
-
             }
         }
 
