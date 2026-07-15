@@ -1,4 +1,4 @@
-package handelers;
+package handlers;
 
 public class JoinGameHandler {
 }
