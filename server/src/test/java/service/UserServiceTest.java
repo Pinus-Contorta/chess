@@ -22,6 +22,8 @@ public class UserServiceTest {
         userService = new UserService(userDAO, authDAO);
     }
 
+    //REGISTRATION TESTS
+
     @Test
     public void registerSuccess() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("bobert", "password", "bobert@email.com");
@@ -38,5 +40,25 @@ public class UserServiceTest {
         userService.register(request); // first registration succeeds
 
         assertThrows(DataAccessException.class, () -> userService.register(request));
+    }
+
+    //LOGIN TESTS
+
+    @Test
+    public void loginSuccess() throws DataAccessException {
+        userService.register(new RegisterRequest("bobert", "password", "bobert@email.com"));
+
+        LoginResult result = userService.login(new LoginRequest("bobert", "password"));
+
+        assertEquals("bobert", result.username());
+        assertNotNull(result.authToken());
+    }
+
+    @Test
+    public void loginWrongPasswordFails() throws DataAccessException {
+        userService.register(new RegisterRequest("bobert", "password", "bobert@email.com"));
+
+        assertThrows(DataAccessException.class,
+                () -> userService.login(new LoginRequest("bobert", "wrongpassword")));
     }
 }

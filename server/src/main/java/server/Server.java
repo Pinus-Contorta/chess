@@ -4,6 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import dataaccess.UserDAO;
+import handlers.LoginHandler;
 import handlers.RegisterHandler;
 import io.javalin.*;
 import service.UserService;
@@ -23,8 +24,11 @@ public class Server {
 
         // Register your endpoints and exception handlers here.
         RegisterHandler registerHandler =  new RegisterHandler(userService);
+        LoginHandler loginHandler = new LoginHandler(userService);
 
         javalin.post("/user", registerHandler::handle);
+        javalin.post("/session", loginHandler::handle);
+
     }
 
     public int run(int desiredPort) {
