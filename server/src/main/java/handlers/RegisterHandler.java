@@ -23,7 +23,8 @@ public class RegisterHandler {
         try{
             RegisterResult result = userService.register(request);
             context.status(200);
-            context.json(result);
+            context.contentType("application/json");
+            context.result(gson.toJson(result));
         }catch (DataAccessException exception){
             String message = exception.getMessage();
 
@@ -38,7 +39,8 @@ public class RegisterHandler {
                 status = 500;
             }
             context.status(status);
-            context.json(new ErrorResponse(message));
+            context.contentType("application/json");
+            context.result(gson.toJson(new ErrorResponse(message)));
         }
 
     }
