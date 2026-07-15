@@ -3,6 +3,7 @@ package server;
 import dataaccess.*;
 import handlers.ClearApplicationHandler;
 import handlers.LoginHandler;
+import handlers.LogoutHandler;
 import handlers.RegisterHandler;
 import io.javalin.*;
 import service.ClearService;
@@ -26,9 +27,12 @@ public class Server {
         // Register your endpoints and exception handlers here.
         RegisterHandler registerHandler =  new RegisterHandler(userService);
         LoginHandler loginHandler = new LoginHandler(userService);
+        LogoutHandler logoutHandler = new LogoutHandler(userService);
         ClearApplicationHandler clearApplicationHandler= new ClearApplicationHandler(clearService);
 
+
         javalin.delete("/db", clearApplicationHandler::handle);
+        javalin.delete("/session", logoutHandler::handle);
 
         javalin.post("/user", registerHandler::handle);
         javalin.post("/session", loginHandler::handle);

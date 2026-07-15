@@ -61,4 +61,20 @@ public class UserServiceTest {
         assertThrows(DataAccessException.class,
                 () -> userService.login(new LoginRequest("bobert", "wrongpassword")));
     }
+
+    //LOGOUT TESTS
+
+    @Test
+    public void logoutSucess() throws DataAccessException {
+        RegisterResult registerResult = userService.register(new RegisterRequest("bobert", "password", "bobert@email.com"));
+
+        userService.logout(registerResult.authToken());
+
+        assertThrows(DataAccessException.class, () -> userService.logout(registerResult.authToken()));
+    }
+
+    @Test
+    public void logoutBadTokenFail() {
+        assertThrows(DataAccessException.class, () -> userService.logout("insert bad token here"));
+    }
 }
