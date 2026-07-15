@@ -246,81 +246,63 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (this.board != null) {
-            ChessPiece movingPiece = board.getPiece(move.getStartPosition());
-            if(movingPiece != null && movingPiece.getTeamColor() == teamTurn) {
-
-                if (validMoves(move.getStartPosition()).contains(move)) {
-
-                    boolean isDiagonalMove = move.getStartPosition().getColumn() != move.getEndPosition().getColumn();
-                    boolean isPawnMove = movingPiece.getPieceType() == ChessPiece.PieceType.PAWN;
-                    boolean destinationEmpty = board.getPiece(move.getEndPosition()) == null;
-
-                    boolean isEnPassantCapture = isPawnMove && isDiagonalMove && destinationEmpty;
-
-                    //Sets end position to data of movingPiece
-                    if(move.getPromotionPiece() != null){
-                        board.addPiece(move.getEndPosition(), new ChessPiece(teamTurn, move.getPromotionPiece()));
-                    }
-                    else{
-                        board.addPiece(move.getEndPosition(), movingPiece);
-                    }
-
-                    movingPiece.setFirstMove(false);
-
-
-                    if (movingPiece.getPieceType() == ChessPiece.PieceType.KING) {
-
-                        board.disableCastleKingside(teamTurn);
-                        board.disableCastleQueenside(teamTurn);
-
-                    }
-                    else if (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
-
-                        ChessPosition start = move.getStartPosition();
-                        if (start.getColumn() == 1) {
-
-                            board.disableCastleQueenside(teamTurn);
-                        }
-                        else if (start.getColumn() == 8) {
-
-                            board.disableCastleKingside(teamTurn);
-                        }
-                    }
-
-                    //For Castling
-                    boolean isCastle =
-                            movingPiece.getPieceType() == ChessPiece.PieceType.KING
-                                    && Math.abs(move.getStartPosition().getColumn() - move.getEndPosition().getColumn()) == 2;
-
-                    isInCastle(move, board, isCastle);
-
-                    //For En Passant
-                    if (isEnPassantCapture) {
-                        ChessPosition capturedPawnPosition =
-                                new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());
-                        board.addPiece(capturedPawnPosition, null);
-                    }
-
-                    //Sets point of origin to null
-                    board.addPiece(move.getStartPosition(), null);
-
-                    board.setLastMoveMade(move);
-
-                    teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
-                } else {
-                    throw new InvalidMoveException("Move not held in validMoves");
-                }
-            }
-            else {
-                throw new InvalidMoveException("Move not held in validMoves");
-            }
+        if (this.board == null) {
+            throw new InvalidMoveException("Error: no board");
         }
-        else {
-            throw new InvalidMoveException("Move not held in validMoves");
+
+        ChessPiece movingPiece = board.getPiece(move.getStartPosition());
+        if (movingPiece == null || movingPiece.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException("Error: invalid piece or wrong turn");
         }
+
+        if (!validMoves(move.getStartPosition()).contains(move)) {
+            throw new InvalidMoveException("Error: invalid move");
+        }
+
+        boolean isDiagonalMove = move.getStartPosition().getColumn() != move.getEndPosition().getColumn();
+        boolean isPawnMove = movingPiece.getPieceType() == ChessPiece.PieceType.PAWN;
+        boolean destinationEmpty = board.getPiece(move.getEndPosition()) == null;
+        boolean isEnPassantCapture = isPawnMove && isDiagonalMove && destinationEmpty;
+
+        // Move the piece (or place the promoted piece) at the destination
+        if (move.getPromotionPiece() != null) {
+            board.addPiece(move.getEndPosition(), new ChessPiece(teamTurn, move.getPromotionPiece()));
+        } else {
+            board.addPiece(move.getEndPosition(), movingPiece);
+        }
+
+        // Clear the piece's old square
+        board.addPiece(move.getStartPosition(), null);
+
+        movingPiece.setFirstMove(false);
+
+        // Update castling rights if a king or rook moved
+        if (movingPiece.getPieceType() == ChessPiece.PieceType.KING) {
+            board.disableCastleKingside(teamTurn);
+            board.disableCastleQueenside(teamTurn);
+        } else if (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
+            updateCastlingRightsForRookMove(move.getStartPosition(), teamTurn);
+        }
+
+        // Handle en passant: remove the captured pawn, which sits beside the
+        // destination square rather than on it
+        if (isEnPassantCapture) {
+            int capturedPawnRow = move.getStartPosition().getRow();
+            ChessPosition capturedPawnPosition = new ChessPosition(capturedPawnRow, move.getEndPosition().getColumn());
+            board.addPiece(capturedPawnPosition, null);
+        }
+
+        // Switch turns
+        teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
+    private void updateCastlingRightsForRookMove(ChessPosition start, TeamColor teamTurn) {
+        if (start.getColumn() == 1) {
+            board.disableCastleQueenside(teamTurn);
+        } else if (start.getColumn() == 8) {
+            board.disableCastleKingside(teamTurn);
+        }
+    }
 
 
     /**
