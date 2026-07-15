@@ -29,6 +29,7 @@ public class Server {
         LogoutHandler logoutHandler = new LogoutHandler(userService);
         ClearApplicationHandler clearApplicationHandler = new ClearApplicationHandler(clearService);
         ListGamesHandler listGamesHandler = new ListGamesHandler(gameService);
+        CreateGameHandler createGameHandler = new CreateGameHandler(gameService);
 
         //DELETE
         javalin.delete("/db", clearApplicationHandler::handle);
@@ -36,6 +37,7 @@ public class Server {
         //POST
         javalin.post("/user", registerHandler::handle);
         javalin.post("/session", loginHandler::handle);
+        javalin.post("/game", createGameHandler::handle);
         //GET
         javalin.get("/game", listGamesHandler::handle);
 

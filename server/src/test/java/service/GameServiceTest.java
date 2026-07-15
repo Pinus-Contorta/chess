@@ -48,4 +48,19 @@ public class GameServiceTest {
         assertThrows(DataAccessException.class, () -> gameService.listGames("bogus-token"));
     }
 
+    //CREATE GAME TESTS
+
+    @Test
+    public void createGameSuccess() throws DataAccessException {
+        CreateGameResult result = gameService.createGame(authToken, new CreateGameRequest("thisGame"));
+
+        assertTrue(result.gameID() > 0);
+        assertNotNull(gameDAO.getGame(result.gameID()));
+    }
+
+    @Test
+    public void createNameBadNameFail() {
+        assertThrows(DataAccessException.class, () -> gameService.createGame(authToken,new CreateGameRequest(null)));
+    }
+
 }
