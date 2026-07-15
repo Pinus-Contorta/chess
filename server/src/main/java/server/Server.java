@@ -1,12 +1,10 @@
 package server;
 
 import dataaccess.*;
-import handlers.ClearApplicationHandler;
-import handlers.LoginHandler;
-import handlers.LogoutHandler;
-import handlers.RegisterHandler;
+import handlers.*;
 import io.javalin.*;
 import service.ClearService;
+import service.GameService;
 import service.UserService;
 
 public class Server {
@@ -22,20 +20,25 @@ public class Server {
 
         UserService userService = new UserService(userDAO, authDAO);
         ClearService clearService = new ClearService(userDAO,authDAO,gameDAO);
+        GameService gameService = new GameService(gameDAO,authDAO);
 
 
         // Register your endpoints and exception handlers here.
         RegisterHandler registerHandler =  new RegisterHandler(userService);
         LoginHandler loginHandler = new LoginHandler(userService);
         LogoutHandler logoutHandler = new LogoutHandler(userService);
-        ClearApplicationHandler clearApplicationHandler= new ClearApplicationHandler(clearService);
+        ClearApplicationHandler clearApplicationHandler = new ClearApplicationHandler(clearService);
+        ListGamesHandler listGamesHandler = new ListGamesHandler(gameService);
 
-
+        //DELETE
         javalin.delete("/db", clearApplicationHandler::handle);
         javalin.delete("/session", logoutHandler::handle);
-
+        //POST
         javalin.post("/user", registerHandler::handle);
         javalin.post("/session", loginHandler::handle);
+        //GET
+        javalin.get("/game", listGamesHandler::handle);
+
 
 
     }
