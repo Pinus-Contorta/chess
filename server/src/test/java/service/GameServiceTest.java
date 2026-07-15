@@ -65,6 +65,7 @@ public class GameServiceTest {
 
     //JOIN GAME TESTS
 
+    @Test
     public void joinGameSuccess() throws DataAccessException {
         CreateGameResult created = gameService.createGame(authToken, new CreateGameRequest("thisGame"));
 
