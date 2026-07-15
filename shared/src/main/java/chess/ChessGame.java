@@ -140,31 +140,6 @@ public class ChessGame {
         }
     }
 
-    //Deprecated wouldBeInCheck that was too deeply nested for auto-grader.
-    /*
-    private boolean wouldBeInCheck(TeamColor teamColor, ChessBoard board) {
-        ChessPosition kingPosition = findKing(board, teamColor);
-
-        for (int row = 1; row <= board.squares.length; row++) {
-            for (int col = 1; col <= board.squares.length; col++) {
-                ChessPosition targetPosition = new ChessPosition(row, col);
-                ChessPiece targetPiece = board.getPiece(targetPosition);
-
-                if (targetPiece != null && targetPiece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> targetMoves = new ChessMoveCalculator(targetPiece).getValidMoves(board, targetPosition, targetPiece);
-
-                    for (ChessMove enemyMove : targetMoves) {
-                        if (enemyMove.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    */
-
     /**
      * Determines if the given team is in check
      *
@@ -172,35 +147,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
 
-    //Deprecated isInCheck that was too deeply nested for auto-grader.
-    /*
-    public boolean isInCheck(TeamColor teamColor) {
 
-        ChessPosition kingPosition = findKing(board, teamColor);
-
-        for (int row = 1; row <= board.squares.length; row++) {
-
-            for (int col = 1; col <= board.squares.length; col++) {
-
-                ChessPosition targetPosition = new ChessPosition(row, col);
-                ChessPiece targetPiece = board.getPiece(targetPosition);
-
-                if ((board.getPiece(targetPosition) != null) && (targetPiece.getTeamColor() != teamColor)){
-                    Collection<ChessMove> targetMoves = new ChessMoveCalculator(targetPiece).getValidMoves(board, targetPosition, targetPiece);
-
-                    for (ChessMove move : targetMoves){
-
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-     */
     public boolean isInCheck(TeamColor teamColor) {
         return isInCheck(teamColor, board);
     }
@@ -245,7 +192,7 @@ public class ChessGame {
      * @param move chess move to perform
      * @throws InvalidMoveException if move is invalid
      */
-    public void makeMove(ChessMove move) throws InvalidMoveException {
+   public void makeMove(ChessMove move) throws InvalidMoveException {
         if (this.board == null) {
             throw new InvalidMoveException("Error: no board");
         }
@@ -278,6 +225,10 @@ public class ChessGame {
 
         // Update castling rights if a king or rook moved
         if (movingPiece.getPieceType() == ChessPiece.PieceType.KING) {
+            int colDiff = move.getEndPosition().getColumn() - move.getStartPosition().getColumn();
+            if (Math.abs(colDiff) == 2) {
+                relocateRookForCastle(move.getStartPosition(), move.getEndPosition());
+            }
             board.disableCastleKingside(teamTurn);
             board.disableCastleQueenside(teamTurn);
         } else if (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
@@ -291,9 +242,22 @@ public class ChessGame {
             ChessPosition capturedPawnPosition = new ChessPosition(capturedPawnRow, move.getEndPosition().getColumn());
             board.addPiece(capturedPawnPosition, null);
         }
+        board.setLastMoveMade(move);
 
         // Switch turns
         teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+    }
+
+    private void relocateRookForCastle(ChessPosition kingStart, ChessPosition kingEnd) {
+        int row = kingStart.getRow();
+        boolean kingside = kingEnd.getColumn() > kingStart.getColumn();
+
+        ChessPosition rookStart = new ChessPosition(row, kingside ? 8 : 1);
+        ChessPosition rookEnd = new ChessPosition(row, kingside ? kingEnd.getColumn() - 1 : kingEnd.getColumn() + 1);
+
+        ChessPiece rook = board.getPiece(rookStart);
+        board.addPiece(rookEnd, rook);
+        board.addPiece(rookStart, null);
     }
 
     private void updateCastlingRightsForRookMove(ChessPosition start, TeamColor teamTurn) {

@@ -217,41 +217,35 @@ public class ChessMoveCalculator {
 
     private boolean isSquareUnderAttack(ChessBoard board, ChessPosition square, ChessGame.TeamColor teamColor) {
         for (int row = 1; row <= board.squares.length; row++) {
-
             for (int col = 1; col <= board.squares.length; col++) {
-
-
                 ChessPosition pos = new ChessPosition(row, col);
-                ChessPiece enemy = board.getPiece(pos);
-
-                if (enemy != null && enemy.getTeamColor() != teamColor) {
-
-
-                    if (enemy.getPieceType() == ChessPiece.PieceType.KING) {
-
-
-                        // Handle king threats directly — never recurse into castling logic
-                        int rowDiff = Math.abs(pos.getRow() - square.getRow());
-                        int colDiff = Math.abs(pos.getColumn() - square.getColumn());
-
-                        if (rowDiff <= 1 && colDiff <= 1 && !(rowDiff == 0 && colDiff == 0)) {
-                            return true;
-                        }
-                    } else {
-
-                        Collection<ChessMove> enemyMoves = new ChessMoveCalculator(enemy).getValidMoves(board, pos, enemy);
-
-                        for (ChessMove m : enemyMoves) {
-
-
-                            if (m.getEndPosition().equals(square)) {
-                                return true;
-                            }
-                        }
-                    }
+                if (pieceThreatensSquare(board, pos, square, teamColor)) {
+                    return true;
                 }
             }
         }
         return false;
+    }
+
+    private boolean pieceThreatensSquare(ChessBoard board, ChessPosition pos, ChessPosition square,
+                                         ChessGame.TeamColor teamColor) {
+        ChessPiece enemy = board.getPiece(pos);
+        if (enemy == null || enemy.getTeamColor() == teamColor) {
+            return false;
+        }
+
+        if (enemy.getPieceType() == ChessPiece.PieceType.KING) {
+            return kingThreatensSquare(pos, square);
+        }
+
+        Collection<ChessMove> enemyMoves = new ChessMoveCalculator(enemy).getValidMoves(board, pos, enemy);
+        return enemyMoves.stream().anyMatch(m -> m.getEndPosition().equals(square));
+    }
+
+    private boolean kingThreatensSquare(ChessPosition kingPos, ChessPosition square) {
+        // Handle king threats directly — never recurse into castling logic
+        int rowDiff = Math.abs(kingPos.getRow() - square.getRow());
+        int colDiff = Math.abs(kingPos.getColumn() - square.getColumn());
+        return rowDiff <= 1 && colDiff <= 1 && !(rowDiff == 0 && colDiff == 0);
     }
 }
