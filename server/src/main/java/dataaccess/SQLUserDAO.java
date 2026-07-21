@@ -1,6 +1,5 @@
 package dataaccess;
 
-import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -58,16 +57,6 @@ public class SQLUserDAO implements UserDAO {
     }
 
     private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-
-        try(var connection = DatabaseManager.getConnection()) {
-            for (var statement : CREATE_STATEMENTS) {
-                try (var prepStatement = connection.prepareStatement(statement)) {
-                    prepStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException exception){
-            throw new DataAccessException("Error: unable to configure the database", exception);
-        }
+        SQLGameDAO.databaseConfigurator(CREATE_STATEMENTS);
     }
 }

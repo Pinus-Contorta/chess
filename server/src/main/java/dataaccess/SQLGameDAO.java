@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class SQLGameDAO implements GameDAO{
 
@@ -105,10 +104,14 @@ public class SQLGameDAO implements GameDAO{
     }
 
     private void configureDatabase() throws DataAccessException {
+        databaseConfigurator(CREATE_STATEMENTS);
+    }
+
+    static void databaseConfigurator(String[] createStatements) throws DataAccessException {
         DatabaseManager.createDatabase();
 
         try(var connection = DatabaseManager.getConnection()) {
-            for (var statement : CREATE_STATEMENTS) {
+            for (var statement : createStatements) {
                 try (var prepStatement = connection.prepareStatement(statement)) {
                     prepStatement.executeUpdate();
                 }
