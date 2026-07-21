@@ -64,8 +64,6 @@ public class SQLAuthDAOTest {
 
     @Test
     public void deleteAuthNonexistentTokenDoesNotThrow() {
-        // deleting a token that was never there isn't an error condition here —
-        // SQL DELETE simply matches zero rows
         assertDoesNotThrow(() -> authDAO.deleteAuth("neverExisted"));
     }
 
