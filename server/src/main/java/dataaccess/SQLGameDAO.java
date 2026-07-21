@@ -39,11 +39,11 @@ public class SQLGameDAO implements GameDAO{
 
     @Override
     public void createGame(GameData game) throws DataAccessException {
-        var statement =  "INSERT INTO `user` (" +
+        var statement =  "INSERT INTO game (" +
                 "gameID, " +
                 "whiteUsername, " +
-                "blackUsername" +
-                "gameName" +
+                "blackUsername," +
+                "gameName," +
                 "game) VALUES (?,?,?,?,?)";
         var gameJSON = GSON.toJson(game.game());
         executeUpdate(statement, String.valueOf(game.gameID()), game.whiteUsername(), game.blackUsername(),game.gameName(), gameJSON);
