@@ -10,9 +10,9 @@ public class SQLAuthDAO implements AuthDAO {
     private static final String[] CREATE_STATEMENTS = {
             """
             CREATE TABLE IF NOT EXISTS auth (
-                'authToken' VARCHAR(255) NOT NULL,
-                'username' VARCHAR(255) NOTE NULL,
-                PRIMARY KEY ('authToken')
+                `authToken` VARCHAR(255) NOT NULL,
+                `username` VARCHAR(255) NOT NULL,
+                PRIMARY KEY (`authToken`)
                 )
             """
     };
@@ -26,6 +26,7 @@ public class SQLAuthDAO implements AuthDAO {
         executeUpdate("TRUNCATE auth");
     }
 
+    //Remember in the future to use the (?,?) and placeholders in general to prevent SQL injection. Also find out how to make an SQL injection.
     @Override
     public void createAuth(AuthData auth) throws DataAccessException {
         var statement =  "INSERT INTO auth (authToken, username) VALUES (?,?)";
@@ -34,12 +35,25 @@ public class SQLAuthDAO implements AuthDAO {
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
+        var statement = "SELECT authToken, username FROM auth WHERE authToken=?";
+
+        try (var connection = DatabaseManager.getConnection(); var prepStatement = connection.prepareStatement(statement)) {
+            prepStatement.setString(1, authToken);
+
+            try(var resultSet = prepStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    return new AuthData(resultSet.getString("authToken"), resultSet.getString("username"));
+                }
+            }
+        }catch (SQLException exception) {
+            throw new DataAccessException("Error: could not read authentication data", exception);
+        }
         return null;
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-
+        executeUpdate("DELETE FROM auth WHERE authToken=?",authToken);
     }
 
     private void executeUpdate(String statement, String... params) throws DataAccessException {
