@@ -5,7 +5,6 @@ import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import service.GameService;
 import service.ListGamesResult;
-import service.UserService;
 
 public class ListGamesHandler {
 
@@ -19,17 +18,19 @@ public class ListGamesHandler {
     public void handle(Context context) {
         String authToken = context.header("authorization");
 
-        try{
+        try {
             ListGamesResult result = gameService.listGames(authToken);
             context.status(200);
-            context.contentType("application.json");
+            context.contentType("application/json");
             context.result(gson.toJson(result));
-        }catch(DataAccessException exception) {
-            context.status(401);
-            context.contentType("applicaiton/json");
-            context.result(gson.toJson(new ErrorResponse(exception.getMessage())));
+        } catch (DataAccessException exception) {
+            String message = exception.getMessage();
+            int status = message.contains("unauthorized") ? 401 : 500;
+            String responseMessage = message.toLowerCase().contains("error") ? message : "Error: " + message;
+            context.status(status);
+            context.contentType("application/json");
+            context.result(gson.toJson(new ErrorResponse(responseMessage)));
         }
-
     }
     private record ErrorResponse(String message) {}
 }

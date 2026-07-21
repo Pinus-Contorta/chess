@@ -32,7 +32,8 @@ public class JoinGameHandler {
                         : 500;
             context.status(status);
             context.contentType("application/json");
-            context.result(gson.toJson(new ErrorResponse(message)));
+            String responseMessage = message.toLowerCase().contains("error") ? message : "Error: " + message;
+            context.result(gson.toJson(new ErrorResponse(responseMessage)));
         }
     }
 

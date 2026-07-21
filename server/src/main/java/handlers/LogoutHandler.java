@@ -17,15 +17,18 @@ public class LogoutHandler {
     public void handle(Context context) {
         String authToken = context.header("authorization");
 
-        try{
+        try {
             userService.logout(authToken);
             context.status(200);
             context.contentType("application/json");
             context.result("{}");
         } catch (DataAccessException exception) {
-            context.status(401);
+            String message = exception.getMessage();
+            int status = message.toLowerCase().contains("unauthorized") ? 401 : 500;
+            String responseMessage = message.toLowerCase().contains("error") ? message : "Error: " + message;
+            context.status(status);
             context.contentType("application/json");
-            context.result(gson.toJson(new ErrorResponse(exception.getMessage())));
+            context.result(gson.toJson(new ErrorResponse(responseMessage)));
         }
     }
     private record  ErrorResponse(String message) {}

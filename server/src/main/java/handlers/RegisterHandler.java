@@ -12,7 +12,6 @@ public class RegisterHandler {
     private final UserService userService;
     private final Gson gson = new Gson();
 
-
     public RegisterHandler(UserService userService) {
         this.userService = userService;
     }
@@ -20,30 +19,28 @@ public class RegisterHandler {
     public void handle(Context context) {
         RegisterRequest request = gson.fromJson(context.body(), RegisterRequest.class);
 
-        try{
+        try {
             RegisterResult result = userService.register(request);
             context.status(200);
             context.contentType("application/json");
             context.result(gson.toJson(result));
-        }catch (DataAccessException exception){
+        } catch (DataAccessException exception) {
             String message = exception.getMessage();
 
             int status;
-
-            //I can see this being finnicky, there might be a better way to pull this off than to hard code it.
             if (message.contains("bad request")) {
                 status = 400;
             } else if (message.contains("already taken")) {
                 status = 403;
-            }else {
+            } else {
                 status = 500;
             }
+            String responseMessage = message.toLowerCase().contains("error") ? message : "Error: " + message;
             context.status(status);
             context.contentType("application/json");
-            context.result(gson.toJson(new ErrorResponse(message)));
+            context.result(gson.toJson(new ErrorResponse(responseMessage)));
         }
-
     }
 
-    private record  ErrorResponse(String message) {}
+    private record ErrorResponse(String message) {}
 }

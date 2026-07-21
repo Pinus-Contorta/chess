@@ -30,9 +30,10 @@ public class CreateGameHandler {
             int status = message.contains("unauthorized") ? 401
                     : message.contains("bad request") ? 400
                       : 500;
+            String responseMessage = message.toLowerCase().contains("error") ? message : "Error: " + message;
             context.status(status);
             context.contentType("application/json");
-            context.result(gson.toJson(new ErrorResponse(message)));
+            context.result(gson.toJson(new ErrorResponse(responseMessage)));
         }
     }
 

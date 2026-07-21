@@ -21,9 +21,11 @@ public class ClearApplicationHandler {
             context.contentType("application/json");
             context.result("{}");
         } catch (DataAccessException exception) {
+            String message = exception.getMessage();
+            String responseMessage = message.toLowerCase().contains("error") ? message : "Error: " + message;
             context.status(500);
             context.contentType("application/json");
-            context.result(gson.toJson(new ErrorResponse(exception.getMessage())));
+            context.result(gson.toJson(new ErrorResponse(responseMessage)));
         }
     }
     private record ErrorResponse(String message) {}
