@@ -57,6 +57,10 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     private void executeUpdate(String statement, String... params) throws DataAccessException {
+        updateExecutor(statement, params);
+    }
+
+    static void updateExecutor(String statement, String[] params) throws DataAccessException {
         try (var connection = DatabaseManager.getConnection(); var prepStatement = connection.prepareStatement(statement)){
             for (int i = 0; i < params.length; i++) {
                 prepStatement.setString(i + 1, params[i]);

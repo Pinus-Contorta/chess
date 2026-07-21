@@ -69,7 +69,9 @@ public class SQLGameDAO implements GameDAO{
     public Collection<GameData> listGames() throws DataAccessException {
         var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM `game`";
         var result = new ArrayList<GameData>();
-        try (var connection = DatabaseManager.getConnection(); var prepStatement = connection.prepareStatement(statement); var resultSet = prepStatement.executeQuery()) {
+        try (var connection = DatabaseManager.getConnection(); var prepStatement = connection.prepareStatement(statement);
+             var resultSet = prepStatement.executeQuery()) {
+
             while (resultSet.next()) {
                 result.add(readGame(resultSet));
             }
@@ -99,14 +101,7 @@ public class SQLGameDAO implements GameDAO{
     }
 
     private void executeUpdate(String statement, String... params) throws DataAccessException {
-        try (var connection = DatabaseManager.getConnection(); var prepStatement = connection.prepareStatement(statement)){
-            for (int i = 0; i < params.length; i++) {
-                prepStatement.setString(i + 1, params[i]);
-            }
-            prepStatement.executeUpdate();
-        } catch (SQLException exception) {
-            throw new DataAccessException("Error: database could not be updated", exception);
-        }
+        SQLAuthDAO.updateExecutor(statement, params);
     }
 
     private void configureDatabase() throws DataAccessException {
