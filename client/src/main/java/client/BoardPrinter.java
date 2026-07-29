@@ -53,10 +53,10 @@ public class BoardPrinter {
     //Label functions
     private static String columnLabels(int[] columns) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("   "); // 3-col corner, matches rowLabel() width
+        stringBuilder.append("   ");
         for (int col : columns) {
             char letter = (char) ('a' + col - 1);
-            stringBuilder.append(" ").append(letter).append("  "); // 4 visual columns: matches a square's width
+            stringBuilder.append(" ").append(letter).append(" ");
         }
         stringBuilder.append("   "); // trailing corner
         return stringBuilder.append("\n").toString();
