@@ -76,7 +76,7 @@ public class ServerFacade {
             HttpResponse<String> response = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() / 100 != 2) {
-                String message = "Error: server returned status " + response.statusCode();
+                String message = "Error: unable to complete request.";
                 try {
                     var error = gson.fromJson(response.body(), ErrorResponse.class);
                     if (error != null && error.message() != null) {
