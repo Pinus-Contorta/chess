@@ -15,7 +15,7 @@ public class ChessClient {
         //TODO:Impliment ServerFacade
         ServerFacade serverFacade = new ServerFacade(serverURL);
         preLoginClient = new PreLoginClient(serverFacade, this);
-        postLoginClient = new PostLoginClient(serverFacade, this)
+        postLoginClient = new PostLoginClient(serverFacade, this);
     }
 
     public String eval(String inputString) {
@@ -27,5 +27,29 @@ public class ChessClient {
         } catch (Exception exception) {
             return "Error: " + exception.getMessage();
         }
+    }
+
+    public String getPromptLabel() {
+        return state == State.SIGNED_OUT ? "SIGNED_OUT" : "SIGNED_IN";
+    }
+
+    void signIn(String username, String authToken) {
+        this.username = username;
+        this.authToken = authToken;
+        this.state = State.SIGNED_IN;
+    }
+
+    void signOut() {
+        this.username = null;
+        this.authToken = null;
+        this.state = State.SIGNED_OUT;
+    }
+
+    String getAuthToken() {
+        return authToken;
+    }
+
+    String getUsername() {
+        return username;
     }
 }
