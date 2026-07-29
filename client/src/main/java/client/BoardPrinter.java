@@ -27,7 +27,8 @@ public class BoardPrinter {
             }
             stringBuilder.append(rowLabel(row)).append("\n");
         }
-
+        stringBuilder.append(columnLabels(columns));
+        return stringBuilder.toString();
     }
 
     private static int[] ascending(int from, int to) {
@@ -78,6 +79,7 @@ public class BoardPrinter {
                                                    EscapeSequences.SET_TEXT_COLOR_BLACK :
                                                    EscapeSequences.SET_TEXT_COLOR_WHITE);
 
+        //Reset calls prevent color bleed.
         return bg + stringColor + glyph + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
     }
 
