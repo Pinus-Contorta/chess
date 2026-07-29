@@ -41,9 +41,9 @@ public class PreLoginClient {
         try {
             var authData = serverFacade.login(tokens[1], tokens[2]);
             chessClient.signIn(authData.username(), authData.authToken());
-            return "Logged in as" + authData.username();
+            return "Logged in as " + authData.username();
         } catch (Exception exception) {
-            return "Error: " + exception.getMessage();
+            return exception.getMessage();
         }
     }
 
@@ -55,9 +55,9 @@ public class PreLoginClient {
         try {
             var authData = serverFacade.register(tokens[1], tokens[2], tokens[3]);
             chessClient.signIn(authData.username(), authData.authToken());
-            return "User registered"+ "\nLogged in as" + authData.username();
+            return "User registered"+ "\nLogged in as " + authData.username();
         } catch(Exception exception) {
-            return "Error: " + exception.getMessage();
+            return exception.getMessage();
         }
     }
 }

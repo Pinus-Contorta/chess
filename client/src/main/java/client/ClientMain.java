@@ -4,7 +4,7 @@ import chess.*;
 
 public class ClientMain {
     public static void main(String[] args) {
-        int port = args.length > 0 ? Integer.parseInt(args[0]) : 3306;
+        int port = args.length > 0 ? Integer.parseInt(args[0]) : 8080;
         new Repl(port).run();
     }
 }

@@ -97,7 +97,7 @@ public class PostLoginClient {
             return "Expected a number, got: " + tokens[1];
         }
 
-        int gameIndex = gameNumber = 1;
+        int gameIndex = gameNumber - 1;
 
         if(gameIndex < 0 || gameIndex >= lastListedGames.size()) {
             return "No game numbered " + gameNumber + ". Use 'list' command.";
@@ -106,7 +106,7 @@ public class PostLoginClient {
         int gameID = lastListedGames.get(gameIndex).gameID();
 
         String playerColor = tokens[2].toUpperCase();
-        if(!playerColor.equals("WHITE") && !playerColor.equals("Black")) {
+        if(!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
             return "Expected WHITE or BLACK for color, got: " + tokens[2];
         }
 
