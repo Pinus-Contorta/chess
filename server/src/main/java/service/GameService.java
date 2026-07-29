@@ -74,13 +74,13 @@ public class GameService {
         String username = auth.username();
 
         if (request.playerColor().equals("WHITE")) {
-            if (game.whiteUsername() != null) {
+            if (game.whiteUsername() != null && !game.whiteUsername().equals(username)) {
                 throw new DataAccessException("Error: white already taken");
             }
             GameData updated = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
             gameDAO.updateGame(updated);
         } else {
-            if (game.blackUsername() != null) {
+            if (game.blackUsername() != null && !game.blackUsername().equals(username)) {
                 throw new DataAccessException("Error: black already taken");
             }
             GameData updated = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());

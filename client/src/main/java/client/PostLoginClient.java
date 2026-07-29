@@ -55,7 +55,7 @@ public class PostLoginClient {
             serverFacade.createGame(chessClient.getAuthToken(), tokens[1]);
             return "Created game: " + tokens[1];
         }catch (Exception exception) {
-            return "Error: " + exception.getMessage();
+            return exception.getMessage();
         }
     }
 
@@ -79,7 +79,7 @@ public class PostLoginClient {
             return result.toString();
 
         } catch (ResponseException exception) {
-            return "Error: " + exception.getMessage();
+            return exception.getMessage();
         }
     }
 
@@ -114,7 +114,7 @@ public class PostLoginClient {
             serverFacade.joinGame(chessClient.getAuthToken(), playerColor, gameID);
             return "Joined game " + gameNumber + " as " + playerColor + "\n" + BoardPrinter.printBoard(playerColor.equals("WHITE"));
         }catch (Exception exception){
-            return "Error: " + exception.getMessage();
+            return exception.getMessage();
         }
 
     }
@@ -150,7 +150,7 @@ public class PostLoginClient {
             chessClient.signOut();
             return "Logged out.";
         } catch (ResponseException exception) {
-            return "Error: " + exception.getMessage();
+            return exception.getMessage();
         }
     }
 

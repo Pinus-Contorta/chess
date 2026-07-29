@@ -14,8 +14,8 @@ public class BoardPrinter {
         ChessBoard board = new ChessBoard();
         board.resetBoard();
 
-        int[] rows = isWhiteView ? decending(8,1) : ascending (1,8);
-        int[] columns = isWhiteView ? ascending (1,8) : decending(8,1);
+        int[] rows = isWhiteView ? descending(8,1) : ascending (1,8);
+        int[] columns = isWhiteView ? ascending (1,8) : descending(8,1);
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(columnLabels(columns));
@@ -40,8 +40,8 @@ public class BoardPrinter {
         return result;
     }
 
-    private static int[] decending(int from, int to) {
-        int[] result = new int[to - from + 1];
+    private static int[] descending(int from, int to) {
+        int[] result = new int[from - to + 1];
 
         for (int i = 0; i < result.length; i++) {
             result[i] = from - i;
@@ -76,8 +76,8 @@ public class BoardPrinter {
         String glyph = pieceGlyph(piece);
         String stringColor = piece == null ? "" :
                 (piece.getTeamColor() == ChessGame.TeamColor.WHITE ?
-                                                   EscapeSequences.SET_TEXT_COLOR_BLACK :
-                                                   EscapeSequences.SET_TEXT_COLOR_WHITE);
+                                                   EscapeSequences.SET_TEXT_COLOR_RED :
+                                                   EscapeSequences.SET_TEXT_COLOR_BLUE);
 
         //Reset calls prevent color bleed.
         return bg + stringColor + glyph + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
