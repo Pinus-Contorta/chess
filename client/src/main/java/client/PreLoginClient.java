@@ -1,7 +1,5 @@
 package client;
 
-import java.util.Locale;
-
 public class PreLoginClient {
 
     private final ServerFacade serverFacade;

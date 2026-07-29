@@ -134,7 +134,7 @@ public class PostLoginClient {
             return "Expected a number, got: " + tokens[1];
         }
 
-        int gameIndex = gameNumber = 1;
+        int gameIndex = gameNumber - 1;
 
         if(gameIndex < 0 || gameIndex >= lastListedGames.size()) {
             return "No game numbered " + gameNumber + ". Use 'list' command.";
