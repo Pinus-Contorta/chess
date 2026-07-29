@@ -9,9 +9,7 @@ public class ChessClient {
     private final PreLoginClient preLoginClient;
     private final PostLoginClient postLoginClient;
 
-    public ChessClient(String serverURL, PreLoginClient preLoginClient, PostLoginClient postLoginClient) {
-        this.preLoginClient = preLoginClient;
-        this.postLoginClient = postLoginClient;
+    public ChessClient(String serverURL) {
         //TODO:Impliment ServerFacade
         ServerFacade serverFacade = new ServerFacade(serverURL);
         preLoginClient = new PreLoginClient(serverFacade, this);
