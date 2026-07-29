@@ -6,8 +6,8 @@ public class Repl {
     private final ChessClient client;
 
 
-    public Repl(String serverURL) {
-        this.client = new ChessClient(serverURL);
+    public Repl(int port) {
+        this.client = new ChessClient(port);
     }
 
     public void run() {
