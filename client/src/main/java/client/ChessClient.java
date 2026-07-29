@@ -22,7 +22,8 @@ public class ChessClient {
                 case SIGNED_IN -> postLoginClient.eval(inputString);
             };
         } catch (Exception exception) {
-            return exception.getMessage();
+            String message = exception.getMessage();
+            return message != null ? message : "An unexpected error occurred. Please try again.";
         }
     }
 
