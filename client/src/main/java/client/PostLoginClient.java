@@ -1,9 +1,13 @@
 package client;
 
+import java.util.List;
+
 public class PostLoginClient {
 
     private final ServerFacade serverFacade;
     private final ChessClient chessClient;
+
+    private List<GameSummary> lastListedGames = List.of();
 
     public PostLoginClient(ServerFacade serverFacade, ChessClient chessClient) {
         this.serverFacade = serverFacade;
@@ -39,27 +43,127 @@ public class PostLoginClient {
     }
 
     private String createGame(String[] tokens) {
-        return "not yet implemented";
+        if(tokens.length != 2) {
+            return "Expected: create <NAME>";
+        }
+
+        if(chessClient.getAuthToken() == null) {
+            return "Error: Bad authentication token";
+        }
+
+        try{
+            serverFacade.createGame(chessClient.getAuthToken(), tokens[1]);
+            return "Created game: " + tokens[1];
+        }catch (Exception exception) {
+            return "Error: " + exception.getMessage();
+        }
     }
 
     private String listGames() {
-        return "not yet implemented";
+        try {
+            lastListedGames = serverFacade.listGames(chessClient.getAuthToken());
+
+            if (lastListedGames.isEmpty()) {
+                return "No games exist yet. Use 'create' to make one.";
+            }
+
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < lastListedGames.size(); i++) {
+                GameSummary game = lastListedGames.get(i);
+                String white = game.whiteUsername() != null ? game.whiteUsername() : "empty";
+                String black = game.blackUsername() != null ? game.blackUsername() : "empty";
+                result.append(i + 1).append(". ").append(game.gameName())
+                        .append(" (White: ").append(white)
+                        .append(", Black: ").append(black).append(")\n");
+            }
+            return result.toString();
+
+        } catch (ResponseException exception) {
+            return "Error: " + exception.getMessage();
+        }
     }
 
     private String joinGame(String[] tokens) {
-        return "not yet implemented";
+        if (tokens.length != 3) {
+
+            return "Expected: join <ID> [WHITE|BLACK]";
+        }
+
+        int gameNumber;
+
+        try{
+            gameNumber = Integer.parseInt(tokens[1]);
+        }catch (Exception exception) {
+            return "Expected a number, got: " + tokens[1];
+        }
+
+        int gameIndex = gameNumber = 1;
+
+        if(gameIndex < 0 || gameIndex >= lastListedGames.size()) {
+            return "No game numbered " + gameNumber + ". Use 'list' command.";
+        }
+
+        int gameID = lastListedGames.get(gameIndex).gameID();
+
+        String playerColor = tokens[2].toUpperCase();
+        if(!playerColor.equals("WHITE") && !playerColor.equals("Black")) {
+            return "Expected WHITE or BLACK for color, got: " + tokens[2];
+        }
+
+        try {
+            serverFacade.joinGame(chessClient.getAuthToken(), playerColor, gameID);
+            return "Joined game " + gameNumber + " as " + playerColor + "\n" + BoardPrinter.printBoard(playerColor.equals("WHITE"));
+        }catch (Exception exception){
+            return "Error: " + exception.getMessage();
+        }
+
     }
 
+
     private String observeGame(String[] tokens) {
-        return "not yet implemented";
+
+        if(tokens.length != 2) {
+            return "Expected: observe <ID>";
+        }
+
+        int gameNumber;
+
+        try{
+            gameNumber = Integer.parseInt(tokens[1]);
+        }catch (Exception exception) {
+            return "Expected a number, got: " + tokens[1];
+        }
+
+        int gameIndex = gameNumber = 1;
+
+        if(gameIndex < 0 || gameIndex >= lastListedGames.size()) {
+            return "No game numbered " + gameNumber + ". Use 'list' command.";
+        }
+
+        return "Observing game: " + gameNumber + "\n" + BoardPrinter.printBoard(true);
+
     }
 
     private String logout() {
-        return "not yet implemented";
+        try {
+            serverFacade.logout(chessClient.getAuthToken());
+            chessClient.signOut();
+            return "Logged out.";
+        } catch (ResponseException exception) {
+            return "Error: " + exception.getMessage();
+        }
     }
 
+
+    //I know this isn't in the spec, but I ain't gonna log out every time I wanna rage-quit a match.
     private String quit() {
-        return "not yet implemented";
+        try {
+            serverFacade.logout(chessClient.getAuthToken());
+        } catch (ResponseException ignored) {
+            // already logged out or token invalid — fine, we're quitting anyway
+        }
+        chessClient.signOut();
+        return "quit";
     }
 
 }
