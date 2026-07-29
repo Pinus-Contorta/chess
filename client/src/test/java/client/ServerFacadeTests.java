@@ -32,12 +32,6 @@ public class ServerFacadeTests {
         serverFacade.clear();
     }
 
-    @Test
-    public void sampleTest() {
-        assertTrue(true);
-    }
-
-
     //Registration Tests
     @Test
     public void registrationSuccess() throws Exception {
