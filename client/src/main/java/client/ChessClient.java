@@ -10,7 +10,6 @@ public class ChessClient {
     private final PostLoginClient postLoginClient;
 
     public ChessClient(int port) {
-        //TODO:Implement ServerFacade
         ServerFacade serverFacade = new ServerFacade(port);
         preLoginClient = new PreLoginClient(serverFacade, this);
         postLoginClient = new PostLoginClient(serverFacade, this);
@@ -23,7 +22,8 @@ public class ChessClient {
                 case SIGNED_IN -> postLoginClient.eval(inputString);
             };
         } catch (Exception exception) {
-            return "Error: " + exception.getMessage();
+            String message = exception.getMessage();
+            return message != null ? message : "An unexpected error occurred. Please try again.";
         }
     }
 

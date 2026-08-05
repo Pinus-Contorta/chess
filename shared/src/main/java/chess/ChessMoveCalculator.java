@@ -200,14 +200,12 @@ public class ChessMoveCalculator {
         int step = (rookCol > kingStart.getColumn()) ? 1 : -1;
         for (int col = kingStart.getColumn() + step; col != rookCol; col += step) {
             if (board.getPiece(new ChessPosition(row, col)) != null) {
-                System.out.println("Blocked at col " + col);
                 return;
             }
         }
 
         if (isSquareUnderAttack(board, new ChessPosition(row, passThroughCol), king.getTeamColor())
                 || isSquareUnderAttack(board, new ChessPosition(row, kingDestCol), king.getTeamColor())) {
-            System.out.println("Path or destination attacked for rookCol=" + rookCol);
             return;
         }
 

@@ -1,7 +1,5 @@
 package client;
 
-import java.util.Locale;
-
 public class PreLoginClient {
 
     private final ServerFacade serverFacade;
@@ -34,12 +32,30 @@ public class PreLoginClient {
     }
 
     private String login(String[] tokens) {
-        //TODO:Implement PreLoginClient.login
-        return"";
+        if(tokens.length != 3) {
+            return "Expected: login <USERNAME> <PASSWORD>";
+        }
+
+        try {
+            var authData = serverFacade.login(tokens[1], tokens[2]);
+            chessClient.signIn(authData.username(), authData.authToken());
+            return "Logged in as " + authData.username();
+        } catch (Exception exception) {
+            return exception.getMessage();
+        }
     }
 
     private String register(String[] tokens) {
-        //TODO:Implement PreLoginClient.register
-        return"";
+        if(tokens.length != 4){
+            return "register <USERNAME> <PASSWORD> <EMAIL>";
+        }
+
+        try {
+            var authData = serverFacade.register(tokens[1], tokens[2], tokens[3]);
+            chessClient.signIn(authData.username(), authData.authToken());
+            return "User registered"+ "\nLogged in as " + authData.username();
+        } catch(Exception exception) {
+            return exception.getMessage();
+        }
     }
 }
