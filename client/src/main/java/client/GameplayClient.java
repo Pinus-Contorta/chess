@@ -39,6 +39,15 @@ public class GameplayClient implements ServerMessageObserver {
         return "Connecting to game " + gameID + "...";
     }
 
+    /**
+     * Closes the socket without sending LEAVE. Used when the initial CONNECT never
+     * succeeded, so there's nothing registered server-side to notify — this just
+     * makes sure we don't leak the connection.
+     */
+    void abort() {
+        webSocketFacade.close();
+    }
+
     public String eval(String inputString) {
         var tokens = inputString.trim().split("\\s+");
         var command = tokens.length > 0 ? tokens[0].toLowerCase() : "help";

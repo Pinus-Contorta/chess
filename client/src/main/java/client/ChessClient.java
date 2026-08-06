@@ -36,9 +36,19 @@ public class ChessClient {
     }
 
     String enterGameplay(int gameID, String playerColor) throws Exception {
-        gameplayClient = new GameplayClient(this, port, gameID, playerColor);
+        GameplayClient newGameplayClient = new GameplayClient(this, port, gameID, playerColor);
+
+        String result;
+        try {
+            result = newGameplayClient.connect();
+        } catch (Exception exception) {
+            newGameplayClient.abort();
+            throw exception;
+        }
+
+        gameplayClient = newGameplayClient;
         state = State.GAMEPLAY;
-        return gameplayClient.connect();
+        return result;
     }
 
     void leaveGameplay() {
