@@ -6,6 +6,7 @@ import io.javalin.*;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
+import websocket.WebSocketHandler;
 
 public class Server {
 
@@ -38,6 +39,7 @@ public class Server {
         ListGamesHandler listGamesHandler = new ListGamesHandler(gameService);
         CreateGameHandler createGameHandler = new CreateGameHandler(gameService);
         JoinGameHandler joinGameHandler = new JoinGameHandler(gameService);
+        WebSocketHandler webSocketHandler = new WebSocketHandler(gameService, authDAO);
 
         //DELETE
         javalin.delete("/db", clearApplicationHandler::handle);
@@ -50,6 +52,7 @@ public class Server {
         javalin.get("/game", listGamesHandler::handle);
         //PUT
         javalin.put("/game", joinGameHandler::handle);
+        javalin.ws("/ws", webSocketHandler::configure);
     }
 
     public int run(int desiredPort) {
