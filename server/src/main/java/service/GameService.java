@@ -142,7 +142,7 @@ public class GameService {
         try {
             game.game().makeMove(move);
         } catch (InvalidMoveException exception) {
-            throw new DataAccessException("Error: " + exception.getMessage());
+            throw new DataAccessException(exception.getMessage());
         }
 
         gameDAO.updateGame(game);

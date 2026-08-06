@@ -8,12 +8,22 @@ import service.GameService;
 import service.UserService;
 import websocket.WebSocketHandler;
 
+import java.time.Duration;
+
 public class Server {
 
     private final Javalin javalin;
 
     public Server() {
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        javalin = Javalin.create(config -> {
+            config.staticFiles.add("web");
+            /*
+            Jetty's default WebSocket idle timeout is 30 seconds, and Javalin doesn't
+            send keep-alive pings on its own. A human sitting at the REPL between moves
+            will regularly exceed that, so give game connections plenty of headroom.
+            */
+            config.jetty.modifyWebSocketServletFactory(factory -> factory.setIdleTimeout(Duration.ofMinutes(30)));
+        });
 
         UserDAO userDAO;
         AuthDAO authDAO;

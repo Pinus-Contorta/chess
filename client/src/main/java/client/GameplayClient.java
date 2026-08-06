@@ -77,7 +77,12 @@ public class GameplayClient implements ServerMessageObserver {
         if (currentGame == null) {
             return "Board not loaded yet.";
         }
-        return BoardPrinter.printBoard(currentGame.game().getBoard(), isWhiteView());
+        return renderBoard();
+    }
+
+    private String renderBoard() {
+        String board = BoardPrinter.printBoard(currentGame.game().getBoard(), isWhiteView());
+        return currentGame.game().isGameOver() ? board + "\n*** GAME OVER ***" : board;
     }
 
     private String leave() {
@@ -123,8 +128,10 @@ public class GameplayClient implements ServerMessageObserver {
             webSocketFacade.send(new MakeMoveCommand(chessClient.getAuthToken(), gameID, new ChessMove(start, end, promotion)));
             return "Move sent.";
         } catch (Exception exception) {
-            return "Error: unable to send move.";
+            exception.printStackTrace();
+            return "Error: unable to send move (" + exception.getClass().getSimpleName() + ": " + exception.getMessage() + ")";
         }
+
     }
 
     private String resign(String[] tokens) {
@@ -208,7 +215,7 @@ public class GameplayClient implements ServerMessageObserver {
             case LOAD_GAME -> {
                 currentGame = ((LoadGameMessage) message).getGame();
                 resignPending = false;
-                System.out.println("\n" + BoardPrinter.printBoard(currentGame.game().getBoard(), isWhiteView()));
+                System.out.println("\n" + renderBoard());
             }
             case NOTIFICATION -> System.out.println("\n" + ((NotificationMessage) message).getMessage());
             case ERROR -> System.out.println("\n" + ((ErrorMessage) message).getErrorMessage());

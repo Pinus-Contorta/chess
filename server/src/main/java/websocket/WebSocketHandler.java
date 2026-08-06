@@ -47,10 +47,8 @@ public class WebSocketHandler {
                 case LEAVE -> leave(context, command);
                 case RESIGN -> resign(context, command);
             }
-        } catch (DataAccessException exception) {
-            connections.sendToRoot(context, new ErrorMessage(exception.getMessage()));
         } catch (Exception exception) {
-            connections.sendToRoot(context, new ErrorMessage("Error: " + exception.getMessage()));
+            connections.sendToRoot(context, new ErrorMessage(exception.getMessage()));
         }
     }
 
