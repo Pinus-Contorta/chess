@@ -72,7 +72,8 @@ public class PostLoginClient {
                 GameSummary game = lastListedGames.get(i);
                 String white = game.whiteUsername() != null ? game.whiteUsername() : "empty";
                 String black = game.blackUsername() != null ? game.blackUsername() : "empty";
-                result.append(i + 1).append(". ").append(game.gameName())
+                String endedTag = game.gameOver() ? "[ENDED] " : "";
+                result.append(i + 1).append(". ").append(endedTag).append(game.gameName())
                         .append(" (White: ").append(white)
                         .append(", Black: ").append(black).append(")\n");
             }

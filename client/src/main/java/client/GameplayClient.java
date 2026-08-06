@@ -87,7 +87,8 @@ public class GameplayClient implements ServerMessageObserver {
 
     private String leave() {
         try {
-            webSocketFacade.send(new UserGameCommand(UserGameCommand.CommandType.LEAVE, chessClient.getAuthToken(), gameID));
+            webSocketFacade.send(new UserGameCommand(UserGameCommand.CommandType.LEAVE,
+                    chessClient.getAuthToken(), gameID));
         } catch (Exception ignored) {
             // best effort — we're leaving locally regardless
         }

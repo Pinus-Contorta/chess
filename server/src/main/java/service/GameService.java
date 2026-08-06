@@ -35,7 +35,7 @@ public class GameService {
         List<GameTag> summaries = new ArrayList<>();
         for (GameData game : gameDAO.listGames()) {
             summaries.add(new GameTag(
-                    game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+                    game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game().isGameOver()));
         }
 
         return new ListGamesResult(summaries);

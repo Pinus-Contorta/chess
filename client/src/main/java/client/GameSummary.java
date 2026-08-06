@@ -1,4 +1,4 @@
 package client;
 
-public record GameSummary(int gameID, String whiteUsername, String blackUsername, String gameName) {
+public record GameSummary(int gameID, String whiteUsername, String blackUsername, String gameName, boolean gameOver) {
 }
