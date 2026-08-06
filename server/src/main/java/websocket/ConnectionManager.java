@@ -30,7 +30,7 @@ public class ConnectionManager {
         }
     }
 
-    public void sendToRobot(WsContext session, ServerMessage message) {
+    public void sendToRoot(WsContext session, ServerMessage message) {
         session.send(gson.toJson(message));
     }
 
