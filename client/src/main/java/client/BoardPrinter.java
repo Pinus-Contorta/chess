@@ -53,17 +53,17 @@ public class BoardPrinter {
     //Label functions
     private static String columnLabels(int[] columns) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("   ");
+        stringBuilder.append(EscapeSequences.EMPTY);
         for (int col : columns) {
             char letter = (char) ('a' + col - 1);
-            stringBuilder.append(" ").append(letter).append(" ");
+            stringBuilder.append(letter).append(EscapeSequences.WIDE_PAD).append(" ");
         }
-        stringBuilder.append("   "); // trailing corner
+        stringBuilder.append(EscapeSequences.EMPTY); // trailing corner
         return stringBuilder.append("\n").toString();
     }
 
     private static String rowLabel(int row) {
-        return " " + row + " ";
+        return " " + row + EscapeSequences.WIDE_PAD;
     }
     //Label functions
 
