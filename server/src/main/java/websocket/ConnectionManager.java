@@ -22,8 +22,11 @@ public class ConnectionManager {
     }
 
     public void remove(WsContext session) {
-        for(List<Connection> connections : gameConnections.values()) {
-            connections.removeIf(connection -> connection.session().equals(session));
+
+        String id = session.sessionId();
+
+        for (List<Connection> connections : gameConnections.values()) {
+            connections.removeIf(connection -> connection.session().sessionId().equals(id));
         }
     }
 
