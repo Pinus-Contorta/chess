@@ -166,4 +166,20 @@ public class GameService {
         gameDAO.updateGame(game);
         return game;
     }
+
+    public GameData leave(String authToken, int gameID) throws DataAccessException {
+        AuthData auth = validateAuth(authToken);
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+
+        String white = auth.username().equals(game.whiteUsername()) ? null : game.whiteUsername();
+        String black = auth.username().equals(game.blackUsername()) ? null : game.blackUsername();
+
+        GameData updated = new GameData(game.gameID(), white, black, game.gameName(), game.game());
+        gameDAO.updateGame(updated);
+        return updated;
+    }
+
 }
