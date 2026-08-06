@@ -13,7 +13,7 @@ import java.util.Objects;
 public class ChessGame {
 
     private ChessBoard board;
-
+    private boolean gameOver = false;
     public TeamColor teamTurn;
 
     public ChessGame() {
@@ -62,6 +62,14 @@ public class ChessGame {
     public enum TeamColor {
         WHITE,
         BLACK
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
     /**

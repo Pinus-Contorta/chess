@@ -1,12 +1,15 @@
 package service;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -86,5 +89,81 @@ public class GameService {
             GameData updated = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
             gameDAO.updateGame(updated);
         }
+    }
+
+    //Phase 6 Methods
+
+    private AuthData validateAuth(String authToken) throws DataAccessException {
+        if(authToken == null || authDAO.getAuth(authToken) == null) {
+            throw new DataAccessException(("Error: unauthorized"));
+        }
+
+        return authDAO.getAuth(authToken);
+    }
+
+    private ChessGame.TeamColor colorOf(GameData gameData, String username) {
+        return username.equals(gameData.whiteUsername()) ? ChessGame.TeamColor.WHITE :
+                username.equals(gameData.blackUsername()) ? ChessGame.TeamColor.BLACK : null;
+    }
+
+    public GameData connect(String authToken, int gameID) throws DataAccessException {
+
+        validateAuth(authToken);
+
+        GameData game = gameDAO.getGame(gameID);
+
+        if(game == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+
+        return game;
+    }
+
+    public MoveResult makeMove(String authToken, int gameID, ChessMove move) throws DataAccessException {
+
+        AuthData authData = validateAuth(authToken);
+        GameData game = gameDAO.getGame(gameID);
+
+        if(game == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+        if(game.game().isGameOver()) {
+            throw new DataAccessException("Error: game is already ended");
+        }
+
+        ChessGame.TeamColor playerColor = colorOf(game, authData.username());
+        if(playerColor == null) {
+            throw new DataAccessException("Error: observers cannot make moves");
+        }
+        if(game.game().getTeamTurn() != playerColor) {
+            throw new DataAccessException("Error: it is not currently your turn");
+        }
+
+        try {
+            game.game().makeMove(move);
+        } catch (InvalidMoveException exception) {
+            throw new DataAccessException("Error: " + exception.getMessage());
+        }
+
+        gameDAO.updateGame(game);
+        return new MoveResult(game, playerColor);
+    }
+
+    public GameData resign(String authToken, int gameID) throws DataAccessException {
+        AuthData auth = validateAuth(authToken);
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+        if (!auth.username().equals(game.whiteUsername()) && !auth.username().equals(game.blackUsername())) {
+            throw new DataAccessException("Error: observers cannot resign");
+        }
+        if (game.game().isGameOver()) {
+            throw new DataAccessException("Error: game is already over");
+        }
+
+        game.game().setGameOver(true);
+        gameDAO.updateGame(game);
+        return game;
     }
 }
