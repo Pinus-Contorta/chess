@@ -5,11 +5,14 @@ public class ChessClient {
     private State state = State.SIGNED_OUT;
     private String authToken;
     private String username;
+    private final int port;
 
     private final PreLoginClient preLoginClient;
     private final PostLoginClient postLoginClient;
+    private GameplayClient gameplayClient;
 
     public ChessClient(int port) {
+        this.port = port;
         ServerFacade serverFacade = new ServerFacade(port);
         preLoginClient = new PreLoginClient(serverFacade, this);
         postLoginClient = new PostLoginClient(serverFacade, this);
@@ -20,6 +23,7 @@ public class ChessClient {
             return switch (state) {
                 case SIGNED_OUT -> preLoginClient.eval(inputString);
                 case SIGNED_IN -> postLoginClient.eval(inputString);
+                case GAMEPLAY -> gameplayClient.eval(inputString);
             };
         } catch (Exception exception) {
             String message = exception.getMessage();
@@ -28,7 +32,18 @@ public class ChessClient {
     }
 
     public String getPromptLabel() {
-        return state == State.SIGNED_OUT ? "SIGNED_OUT" : "SIGNED_IN";
+        return state.name();
+    }
+
+    String enterGameplay(int gameID, String playerColor) throws Exception {
+        gameplayClient = new GameplayClient(this, port, gameID, playerColor);
+        state = State.GAMEPLAY;
+        return gameplayClient.connect();
+    }
+
+    void leaveGameplay() {
+        gameplayClient = null;
+        state = State.SIGNED_IN;
     }
 
     void signIn(String username, String authToken) {

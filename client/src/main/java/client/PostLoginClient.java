@@ -112,7 +112,7 @@ public class PostLoginClient {
 
         try {
             serverFacade.joinGame(chessClient.getAuthToken(), playerColor, gameID);
-            return "Joined game " + gameNumber + " as " + playerColor + "\n" + BoardPrinter.printBoard(playerColor.equals("WHITE"));
+            return chessClient.enterGameplay(gameID, playerColor);
         }catch (Exception exception){
             return exception.getMessage();
         }
@@ -140,8 +140,13 @@ public class PostLoginClient {
             return "No game numbered " + gameNumber + ". Use 'list' command.";
         }
 
-        return "Observing game: " + gameNumber + "\n" + BoardPrinter.printBoard(true);
+        int gameID = lastListedGames.get(gameIndex).gameID();
 
+        try {
+            return chessClient.enterGameplay(gameID, null);
+        } catch (Exception exception) {
+            return exception.getMessage();
+        }
     }
 
     private String logout() {

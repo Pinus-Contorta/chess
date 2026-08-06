@@ -6,24 +6,25 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 import ui.EscapeSequences;
 
+import java.util.Set;
+
 public class BoardPrinter {
-    public BoardPrinter() {
+
+    public static String printBoard(ChessBoard board, boolean isWhiteView) {
+        return printBoard(board, isWhiteView, Set.of());
     }
 
-    public static String printBoard(boolean isWhiteView) {
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
-
-        int[] rows = isWhiteView ? descending(8,1) : ascending (1,8);
-        int[] columns = isWhiteView ? ascending (1,8) : descending(8,1);
+    public static String printBoard(ChessBoard board, boolean isWhiteView, Set<ChessPosition> highlights) {
+        int[] rows = isWhiteView ? descending(8, 1) : ascending(1, 8);
+        int[] columns = isWhiteView ? ascending(1, 8) : descending(8, 1);
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(columnLabels(columns));
 
-        for(int row : rows) {
+        for (int row : rows) {
             stringBuilder.append(rowLabel(row));
-            for(int col : columns) {
-                stringBuilder.append(square(board, row, col));
+            for (int col : columns) {
+                stringBuilder.append(square(board, row, col, highlights));
             }
             stringBuilder.append(rowLabel(row)).append("\n");
         }
@@ -49,7 +50,6 @@ public class BoardPrinter {
         return result;
     }
 
-
     //Label functions
     private static String columnLabels(int[] columns) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -67,17 +67,21 @@ public class BoardPrinter {
     }
     //Label functions
 
-    private static String square(ChessBoard board, int row, int col) {
+    private static String square(ChessBoard board, int row, int col, Set<ChessPosition> highlights) {
+        ChessPosition position = new ChessPosition(row, col);
         boolean isLight = (row + col) % 2 != 0;
+        boolean highlighted = highlights != null && highlights.contains(position);
 
-        String bg = isLight ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_BLACK;
+        String bg = highlighted
+                ? (isLight ? EscapeSequences.SET_BG_COLOR_YELLOW : EscapeSequences.SET_BG_COLOR_DARK_GREEN)
+                : (isLight ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_BLACK);
 
-        ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+        ChessPiece piece = board.getPiece(position);
         String glyph = pieceGlyph(piece);
         String stringColor = piece == null ? "" :
                 (piece.getTeamColor() == ChessGame.TeamColor.WHITE ?
-                                                   EscapeSequences.SET_TEXT_COLOR_RED :
-                                                   EscapeSequences.SET_TEXT_COLOR_BLUE);
+                 EscapeSequences.SET_TEXT_COLOR_RED :
+                 EscapeSequences.SET_TEXT_COLOR_BLUE);
 
         //Reset calls prevent color bleed.
         return bg + stringColor + glyph + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
@@ -99,7 +103,4 @@ public class BoardPrinter {
             case PAWN -> white ? EscapeSequences.WHITE_PAWN : EscapeSequences.BLACK_PAWN;
         };
     }
-
-
-
 }
